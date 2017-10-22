@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class Flight {
     /**
-     * The name of the airplane's airline.
+     * The name of the airplane's airline will be represented by a three character string in uppercase letters.
      */
     private String airline;
     /**
@@ -62,5 +62,5 @@ public class Flight {
         this.price = price * 100 / 100;
     }
 
-    
+
 }
