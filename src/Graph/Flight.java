@@ -118,6 +118,6 @@ public class Flight {
      */
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return flightNr;
     }
 }
