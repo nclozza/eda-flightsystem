@@ -38,7 +38,8 @@ public class Airport {
     }
 
     /**
-     * Adds an outbound or return flight to the flights list connecting this airport with another.
+     * Adds an outbound or return flight to the flights list connecting this airport with another. In terms of graph
+     * theory it creates a new arc between this airport and another.
      * @param flight The outbound or return flight to be added to the flights list.
      */
     public void addFlight(Flight flight) {
