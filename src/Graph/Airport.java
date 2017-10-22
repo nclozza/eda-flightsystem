@@ -44,4 +44,31 @@ public class Airport {
     public void addFlight(Flight flight) {
         flights.add(flight);
     }
+
+    /**
+     * Two airports are said to be equal if their name is equal.
+     * @param obj The object, preferably an airport, to be compared against this airport.
+     * @return True if both airports have the same name, false otherwise.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj.getClass() != Airport.class) {
+            return false;
+        }
+
+        return this.name.equals(((Airport)obj).getName());
+    }
+
+    /**
+     * The airport's hashcode will be represented by its name's hashcode.
+     * @return The airport's name's hashcode.
+     */
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

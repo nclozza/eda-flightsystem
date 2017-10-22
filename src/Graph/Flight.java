@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class Flight {
     /**
-     * The name of the airplane's airline.
+     * The name of the airplane's airline will be represented by a three character string in uppercase letters.
      */
     private String airline;
     /**
@@ -62,5 +62,62 @@ public class Flight {
         this.price = price * 100 / 100;
     }
 
-    
+    public String getAirline() {
+        return airline;
+    }
+
+    public int getFlightNr() {
+        return flightNr;
+    }
+
+    public List<String> getFlightDays() {
+        return flightDays;
+    }
+
+    public Airport getOrigin() {
+        return origin;
+    }
+
+    public Airport getDestination() {
+        return destination;
+    }
+
+    public Time getDepartureTime() {
+        return departureTime;
+    }
+
+    public Time getDuration() {
+        return duration;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    /**
+     * Two flights are considered equal if their airlines and flight number are both equal.
+     * @param obj The object, preferably a flight, to be compared to this flight.
+     * @return True if their airlines and their flight number are equal, false otherwise.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj.getClass() != Flight.class) {
+            return false;
+        }
+
+        return this.airline.equals(((Flight)obj).getAirline()) && this.flightNr == ((Flight)obj).getFlightNr();
+    }
+
+    /**
+     * A flight's hashcode is represented by the flight's ID number.
+     * @return The flight's ID number.
+     */
+    @Override
+    public int hashCode() {
+        return flightNr;
+    }
 }
