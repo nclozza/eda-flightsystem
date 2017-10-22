@@ -1,5 +1,6 @@
 package Graph;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,6 +26,7 @@ public class Airport {
     public Airport(String name, float latitude, float longitude) {
         this.name = name;
         position = new Coordinate(latitude, longitude);
+        flights = new LinkedList<>();
     }
 
     public String getName() {
