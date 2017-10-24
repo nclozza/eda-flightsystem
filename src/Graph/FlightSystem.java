@@ -8,10 +8,10 @@ import java.util.List;
  * It contains a list of all the "nodes" (airports) and is in charge of adding new ones.
  * It also contains the methods that iterate over the graph in different ways.
  */
-public class System {
+public class FlightSystem {
     private List<Airport> airports;
 
-    public System(){
+    public FlightSystem(){
         airports = new LinkedList<>();
     }
 

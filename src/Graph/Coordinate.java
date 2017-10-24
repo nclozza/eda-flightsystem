@@ -20,6 +20,7 @@ public class Coordinate {
         // The product and division by 10^6 is made to round up to six decimal places.
         this.latitude = (float) (latitude * Math.pow(10, 6) / Math.pow(10,6));
         this.longitude = (float) (longitude * Math.pow(10, 6) / Math.pow(10,6));
+
     }
 
     public float getLatitude() {
