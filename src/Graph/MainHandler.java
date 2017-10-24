@@ -49,7 +49,8 @@ public class MainHandler {
                     //Sintaxis: worldTrip [origen] [prioridad{ft|pr|tt}] [diasSemana]
                 } else if (input.equals("exit")) {
                     System.out.println("Adios");
-                } else {
+                } //Me está faltando el caso del output
+                else {
                     System.out.println("Wrong input");
                 }
 
