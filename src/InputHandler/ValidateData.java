@@ -2,7 +2,9 @@ package InputHandler;
 
 public class ValidateData {
 
-    public static boolean validateAero(String aero) {
+    //In this class we validate data
+
+    public static boolean validateAerpName(String aero) {
         return aero.matches(".") && aero.length() > 0 && aero.length() <= 3;
     }
 
@@ -48,7 +50,7 @@ public class ValidateData {
         }
         return true;
     }
-    
+
 
 //    duracion: (xxh)(yym) con xx numero mayor o igual a 0 indicando las horas. yy numero entre 0 y 59 indicando minutos. las horas son opcionales, ej: 34m.
 //            precio: precio en pesos. numero mayor o igual a 0 con a lo sumo 2 decimales.
