@@ -41,7 +41,7 @@ public class MainHandler {
                     if(aux[1].equals("airport")) {
                         if ( ! (aux.length == 5)) System.out.println("Wrong input");
                         else{
-                            ValidateData.validateAerpName(aux[3]);
+                            ValidateData.validateName(aux[3]);
                         }
                     } else if(aux[1].equals("all")) {
                         if (aux[2].equals("airports")){
