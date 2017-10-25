@@ -33,10 +33,23 @@ public class ValidateData {
         return false;
         //Dont know how to do it yet
     }
-    
+
     //    origen: aeropuerto partida (debe existir)
 //    destino: aeropuerto llegada (debe existir).
-//    horaSalida hora de salida en formato 24 hs. Ej 01:03.
+
+    public static boolean validateTime(String time){
+        String[] aux = time.split(":");
+        Integer hour, min;
+        try {
+            hour = Integer.parseInt(aux[0]);
+            min = Integer.parseInt(aux[1]);
+        } catch (NumberFormatException e){
+            return false;
+        }
+        return true;
+    }
+    
+
 //    duracion: (xxh)(yym) con xx numero mayor o igual a 0 indicando las horas. yy numero entre 0 y 59 indicando minutos. las horas son opcionales, ej: 34m.
 //            precio: precio en pesos. numero mayor o igual a 0 con a lo sumo 2 decimales.
 
