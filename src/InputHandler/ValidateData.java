@@ -76,16 +76,15 @@ public class ValidateData {
 
     public static boolean validateOrigin(String origin) {
         return false;
-        //Dont know how to do it, yet
+        //I should check if origin is a valid airport. It means that
+        //origin is registered
     }
 
     public static boolean validateDestiny(String destiny){
         return false;
-        //Dont know how to do it yet
+        //I should check if destiny is a valid airport. It means that
+        //destiny is registered
     }
-
-    //    origen: aeropuerto partida (debe existir)
-//    destino: aeropuerto llegada (debe existir).
 
     public static boolean validateTime(String time){
         String[] aux = time.split(":");
@@ -99,8 +98,15 @@ public class ValidateData {
         return true;
     }
 
-
-//    duracion: (xxh)(yym) con xx numero mayor o igual a 0 indicando las horas. yy numero entre 0 y 59 indicando minutos. las horas son opcionales, ej: 34m.
-//            precio: precio en pesos. numero mayor o igual a 0 con a lo sumo 2 decimales.
+    public static boolean validateLineFile(String line){
+        //[aerolinea]#[nroVuelo]#[diasSemana]#[origen]#[destino]#[horaSalida]#[duracion]#[precio]
+        String aux[] = line.split("#");
+        if (aux.length != 8) return false;
+        boolean check = validateName(aux[0]) && validateFlightNumber(aux[1]);
+        boolean check2 = validateDay(aux[2]) && validateOrigin(aux[3]);
+        boolean check3 = validateDestiny(aux[4]) && validateTime(aux[5]);
+        boolean check4 = validateLong(aux[6]) && validatePrice(aux[7]);
+        return check && check2 && check3 && check4;
+    }
 
 }

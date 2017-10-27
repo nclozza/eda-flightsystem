@@ -3,6 +3,7 @@ package Graph;
 import InputHandler.ConsoleReader;
 import InputHandler.ValidateData;
 
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,10 +29,7 @@ public class MainHandler {
                 System.out.print("> ");
 
                 try {
-
                     input = ConsoleReader.readingFromConsole();
-
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -44,25 +42,21 @@ public class MainHandler {
                             ValidateData.validateName(aux[3]);
                         }
                     } else if(aux[1].equals("all")) {
-                        if (aux[2].equals("airports")){
+                        if (aux[2].equals("airports")) {
                             if (aux.length == 5){
                                 String path = aux[3];
                                 processingFile(path, aux[4]);
                             } else System.out.println("Wrong input");
-                        } else if (aux[2].equals("flight")){
-                            if (aux.length == 5){
+                        } else if (aux[2].equals("flight")) {
+                            if (aux.length == 5) {
                                 String path = aux[3];
                                 processingFile(path, aux[4]);
                             } else System.out.println("Wrong input");
                         }
                     } else if (aux[1].equals("flight")) {
                         if ( !(aux.length == 10)) System.out.println("Wrong input");
-                    } else System.out.println("Wrong input");
-                    //Sintaxis: insert airport [nombre] [lat] [lng]
-                    //Sintaxis: insert all airports FILE [append|replace]
-                    //Sintaxis: insert flight [aerolinea] [nroVuelo] [diasSemana] [origen] [destino]
-                    //[horaSalida] [duracion] [precio]
-                    //Sintaxis: insert all flight FILE [append|replace]
+                    } else
+                        System.out.println("Wrong input");
                 } else if (aux[0].equals("delete")) {
                     if (aux[1].equals("airport")) {
                         if (!(aux.length == 3)) System.out.println("Wrong input");
@@ -75,23 +69,36 @@ public class MainHandler {
 
                             } else if (aux[2].equals("flight")) {
 
-                            } else System.out.println("Wrong input");
+                            } else
+                                System.out.println("Wrong input");
                         }
-                    } else System.out.println("Wrong input");
-                    //Sintaxis: delete airport [nombre]
-                    //Sintaxis: delete all airport
-                    //Sintaxis: delete flight [aerolinea] [nroVuelo]
-                    //Sintaxis: delete all flight
+                    } else
+                        System.out.println("Wrong input");
                 } else if (aux[0].equals("findRoute")) {
                     //Sintaxis: findRoute [origen] [destino] [prioridad{ft|pr|tt}] [diasSemana]
+                    //Aca solo falta validar o ver como haces para validar lo de prioridad
                 } else if (aux[0].equals("worldTrip")) {
+                    System.out.println(aux[0]);
                     //Sintaxis: worldTrip [origen] [prioridad{ft|pr|tt}] [diasSemana]
+                    //Aca solo falta validar o ver como haces para validar lo de prioridad
                 } else if (input.equals("exit")) {
                     System.out.println("Adios");
                     break;
-                } else if (aux[0].equals("outputFormat")){
-                    if (aux.length != 3) System.out.println("Wrong format");
-                    //Sintaxis: outputFormat [tipo{text|KML}] [output{archivo|stdout}]
+                } else if (aux[0].equals("outputFormat")) {
+                    if (aux.length != 3) System.out.println("Wrong input");
+                    if (aux[1].equals("text")) {
+                        //Do something
+                    } else if (aux[1].equals("KML")) {
+                        //Do something
+                    }else
+                        System.out.println("Wrong input");
+
+                    if (aux[2].equals("archivo")) {
+                        //Do something
+                    } else if (aux[2].equals("stdout")) {
+                        //Do something
+                    } else
+                        System.out.println("Wrong input");
                 }
                 else {
                     System.out.println("Wrong input");
@@ -102,13 +109,17 @@ public class MainHandler {
 
     }
 
-    public void processingFile(String path, String option){
+    private void processingFile(String path, String option){
         try {
             BufferedReader br = new BufferedReader(new FileReader("/home/tomas-pc/eda-flightsystem/src/" + path));
             String line = br.readLine();
             while (line != null) {
                 System.out.println(line);
-                //Aca habria que validar cada linea
+                if (!ValidateData.validateLineFile(line)){
+                    System.out.println("Wrong file format");
+                    return;
+                }
+                //Here we should save this line somewhere
                 line = br.readLine();
             }
         } catch (IOException e){
