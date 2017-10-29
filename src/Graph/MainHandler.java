@@ -39,19 +39,24 @@ public class MainHandler {
                     if(aux[1].equals("airport")) {
                         if ( ! (aux.length == 5)) System.out.println("Wrong input");
                         else{
-                            ValidateData.validateName(aux[3]);
+                            ValidateData.validateName(aux[3]); //aux[3] is name
+                            ValidateData.validateLat(aux[4]); //aux[4] is lat
+                            ValidateData.validateLon(aux[5]); //aux[5] is long
+                            //I should call here something like insertAirport(aux[3], aux[4], aux[5]);
                         }
                     } else if(aux[1].equals("all")) {
                         if (aux[2].equals("airports")) {
                             if (aux.length == 5){
                                 String path = aux[3];
-                                processingFile(path, aux[4]);
-                            } else System.out.println("Wrong input");
+                                processingFile(path, aux[4]); //aux[4] is append or replace
+                            } else
+                                System.out.println("Wrong input");
                         } else if (aux[2].equals("flight")) {
                             if (aux.length == 5) {
                                 String path = aux[3];
-                                processingFile(path, aux[4]);
-                            } else System.out.println("Wrong input");
+                                processingFile(path, aux[4]); //aux[4] is append or replace
+                            } else
+                                System.out.println("Wrong input");
                         }
                     } else if (aux[1].equals("flight")) {
                         if ( !(aux.length == 10)) System.out.println("Wrong input");
