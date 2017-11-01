@@ -1,6 +1,5 @@
 package Graph;
 
-import java.sql.Time;
 import java.util.List;
 
 /**
@@ -38,7 +37,7 @@ public class Flight {
     /**
      * The time at which the flight departs given in 24hs hour:minutes format (HH:MM).
      */
-    private Time departureTime;
+    private Graph.Time departureTime;
     /**
      * The duration of the flight given in the following format [hours]h[minutes]m.
      */

@@ -28,6 +28,12 @@ public class Airport {
      */
     private List<Flight> flights;
 
+    /**
+     * Variable that marks a node if it was visited during a transversion of the graph
+     */
+
+    public boolean visited = false;
+
 
     public Airport(String name, double latitude, double longitude) {
         this.name = name;
@@ -78,4 +84,10 @@ public class Airport {
     public Coordinate getPosition() {
         return position;
     }
+
+    public List<Flight> getFlights(){
+        return flights;
+    }
+
+
 }
