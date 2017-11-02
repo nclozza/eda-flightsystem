@@ -104,14 +104,14 @@ public class FlightSystem {
             return airport;
         }
 
-        public priorityQueueAirport minPrice( Airport destination, List<String> days) {
+        public priorityQueueAirport minPath( Airport destination, List<String> days, Comparator<priorityQueueAirport> comparator ) {
             if (this.getAirport() == null || destination == null) {
                 System.out.println("Origin or destination not specified");
                 return null;
             }
 
             clearMarks();
-            PriorityQueue<priorityQueueAirport> priorityQueue = new PriorityQueue<>(new priceComparator());
+            PriorityQueue<priorityQueueAirport> priorityQueue = new PriorityQueue<>(comparator);
             priorityQueueAirport aux = null;
 
             /**
@@ -164,14 +164,22 @@ public class FlightSystem {
     /**
      * Sets the itinerary according to the priority given. This method calls the algorithm that completes the transverse
      * of the graph.
-     * MOMENTARY: ONLY IMPLEMENTED FOR PRICE PRIORITY
+     * The implementation is the same for pr and ft, the only thing that changes is the comparator
      */
 
     public Itinerary setItinerary(Airport origin, Airport destination, List<String> days, String priority){
 
-        //call to get the lowest priced journey
         priorityQueueAirport originPQ = new priorityQueueAirport(origin, 0, null,  null);
-        priorityQueueAirport node = originPQ.minPrice(destination, days);
+        priorityQueueAirport node;
+
+        if (priority.equals("pr"))
+             node = originPQ.minPath(destination, days, new priceComparator());
+
+        else if (priority.equals("ft"))
+            node = originPQ.minPath(destination, days, new timeComparator());
+
+        else
+            return null;
 
         double price = node.getPrice();
 
@@ -277,7 +285,7 @@ public class FlightSystem {
         f.getAirports().get(2).addFlight(flight3);
         f.getAirports().get(2).addFlight(flight4);
 
-        Itinerary it = f.setItinerary(f.getAirports().get(0), f.getAirports().get(3), days1, "price");
+        Itinerary it = f.setItinerary(f.getAirports().get(0), f.getAirports().get(3), days1, "pr");
 
         System.out.println(it.getTotalPrice());
 
