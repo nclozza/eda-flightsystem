@@ -1,5 +1,7 @@
 package Graph;
 
+import de.micromata.opengis.kml.v_2_2_0.Coordinate;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class Airport {
     private List<Flight> flights;
 
 
-    public Airport(String name, float latitude, float longitude) {
+    public Airport(String name, double latitude, double longitude) {
         this.name = name;
         position = new Coordinate(latitude, longitude);
         flights = new LinkedList<>();
@@ -71,5 +73,9 @@ public class Airport {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    public Coordinate getPosition() {
+        return position;
     }
 }
