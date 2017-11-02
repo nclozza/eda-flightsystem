@@ -31,4 +31,12 @@ public class Itinerary {
         this.flightTime = null;
     }
 
+    public double getTotalPrice(){return totalPrice;}
+
+    public Time getFlightTime(){return flightTime;}
+
+    public Time getTotalFlightTime(){return totalFlightTime;}
+
+    public List<ItineraryFlightInfo> getFlights(){return flights;}
+
 }

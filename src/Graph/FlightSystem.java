@@ -7,6 +7,7 @@ import java.util.*;
  * It contains a list of all the "nodes" (airports) and is in charge of adding new ones.
  * It also contains the methods that iterate over the graph in different ways.
  */
+
 public class FlightSystem {
     private List<Airport> airports;
 
@@ -17,6 +18,10 @@ public class FlightSystem {
     public void addAirport(String name, float latitude, float longitude) {
         Airport a = new Airport(name, latitude, longitude);
         airports.add(a);
+    }
+
+    public void addAirport(Airport airport){
+        airports.add(airport);
     }
 
     public List<Airport> getAirports(){
@@ -101,7 +106,7 @@ public class FlightSystem {
 
         public priorityQueueAirport minPrice( Airport destination, List<String> days) {
             if (this.getAirport() == null || destination == null) {
-                System.out.println("Origin or destiny not specified");
+                System.out.println("Origin or destination not specified");
                 return null;
             }
 
@@ -222,10 +227,64 @@ public class FlightSystem {
     }
 
     public void recursivePath(priorityQueueAirport node, ArrayList<ItineraryFlightInfo> flights){
-        if(node == null)
+        if(node == null || node.previousFlight == null)
             return;
 
         flights.add(new ItineraryFlightInfo(node.previousFlight));
         recursivePath(node.previousAirport, flights);
+    }
+
+    public static void main(String[]args){
+
+        double price1 = 100;
+        double price2 = 200;
+        double price3 = 500;
+        double price4 = 600;
+
+        Graph.Time departure = new Graph.Time(0,100);
+        Graph.Time duration = new Graph.Time(0,200);
+        List<String> days1 = new ArrayList<>();
+        days1.add("Lu");
+        Airport origin1 = new Airport("BUE",0,1);
+        Airport destination1 = new Airport("PAR",2,3);
+
+        List<String> days2 = new ArrayList<>();
+        days2.add("Mi");
+        Airport destination2 = new Airport("LON",2,3);
+
+        List<String> days3 = new ArrayList<>();
+        days3.add("Mi");
+        Airport destination3 = new Airport("MOS",2,3);
+
+        List<String> days4 = new ArrayList<>();
+        days4.add("Ju");
+
+        Flight flight1 = new Flight("AA",1234,days1,origin1,destination1,departure,duration,price1);
+        Flight flight2 = new Flight("AF",678,days2,destination1,destination2,departure,duration,price2);
+        Flight flight3 = new Flight("BA",789,days3,destination2,destination3,departure,duration,price3);
+        Flight flight4 = new Flight("AMA",2324,days4,destination2,destination3,departure,duration,price4);
+
+
+        FlightSystem f = new FlightSystem();
+        f.addAirport(origin1);
+
+        f.addAirport(destination1);
+        f.addAirport(destination2);
+        f.addAirport(destination3);
+
+        f.getAirports().get(0).addFlight(flight1);
+        f.getAirports().get(1).addFlight(flight2);
+        f.getAirports().get(2).addFlight(flight3);
+        f.getAirports().get(2).addFlight(flight4);
+
+        Itinerary it = f.setItinerary(f.getAirports().get(0), f.getAirports().get(3), days1, "price");
+
+        System.out.println(it.getTotalPrice());
+
+        for (ItineraryFlightInfo flight : it.getFlights()) {
+            System.out.println(flight.getFlight().getOrigin().getName());
+            System.out.println(flight.getFlight().getDestination().getName());
+        }
+
     }
 }
