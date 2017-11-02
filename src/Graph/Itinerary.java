@@ -14,10 +14,10 @@ public class Itinerary {
 
     private Time flightTime;
 
-    private List<FlightAndDay> flights;
+    private List<ItineraryFlightInfo> flights;
 
 
-    public Itinerary(double price, Time totalFlightTime, Time flightTime, List<FlightAndDay> flights){
+    public Itinerary(double price, Time totalFlightTime, Time flightTime, List<ItineraryFlightInfo> flights){
         this.totalPrice = price;
         this.totalFlightTime = totalFlightTime;
         this.flightTime = flightTime;

@@ -37,7 +37,7 @@ public class Flight {
     /**
      * The time at which the flight departs given in 24hs hour:minutes format (HH:MM).
      */
-    private Graph.Time departureTime;
+    private Time departureTime;
     /**
      * The duration of the flight given in the following format [hours]h[minutes]m.
      */

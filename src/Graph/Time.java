@@ -18,19 +18,13 @@ public class Time {
         else {
             return getHour()+"h"+getMinutes()+"m";
         }
-
     }
-
-    public String increaseDay(String previous, int numberOfDays){
-        Day prev = new Day(previous);
-        Day landing = new Day(prev.getDayNumber() + numberOfDays);
-        return landing.getDayName();
-    }
-
 
     public void setMinutes(double minutes){this.minutes = minutes;}
 
-    public double getHour(){return (minutes/60);}
+    public int getHour(){return ((int) minutes/60);}
 
-    public double getMinutes(){return (minutes%60);}
+    public int getMinutes(){return ((int) minutes%60);}
+
+    public double getAllMinutes(){return minutes;}
 }

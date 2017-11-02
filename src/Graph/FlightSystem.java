@@ -41,6 +41,30 @@ public class FlightSystem {
         }
     }
 
+    private class timeComparator implements Comparator<priorityQueueAirport> {
+        @Override
+        public int compare(priorityQueueAirport o1, priorityQueueAirport o2) {
+            if (o1.getTime().getAllMinutes() > o2.getTime().getAllMinutes())
+                return 1;
+            else if (o1.getTime().getAllMinutes() < o2.getTime().getAllMinutes())
+                return -1;
+            else
+                return 0;
+        }
+    }
+
+    private class flightComparator implements Comparator<Flight> {
+        @Override
+        public int compare(Flight f1, Flight f2) {
+            if (f1.getPrice() > f2.getPrice())
+                return 1;
+            else if (f1.getPrice() < f2.getPrice())
+                return -1;
+            else
+                return 0;
+        }
+    }
+
     private class priorityQueueAirport {
         private Airport airport;
         private Flight previousFlight; //flight del que vino al aeropuerto
@@ -49,33 +73,37 @@ public class FlightSystem {
         private Time time;
 
 
-        public priorityQueueAirport(Airport airport, double price, Flight previousFlight, priorityQueueAirport previousAirport){
+        public priorityQueueAirport(Airport airport, double price, Flight previousFlight, priorityQueueAirport previousAirport) {
             this.airport = airport;
             this.price = price;
             this.previousFlight = previousFlight;
             this.previousAirport = previousAirport;
         }
 
-        public priorityQueueAirport(Airport airport, Time time){
+        public priorityQueueAirport(Airport airport, Time time, Flight previousFlight, priorityQueueAirport previousAirport) {
             this.airport = airport;
             this.time = time;
             this.previousFlight = previousFlight;
             this.previousAirport = previousAirport;
         }
 
-        public double getPrice(){return price;}
+        public double getPrice() {
+            return price;
+        }
 
-        public Time getTime(){return time;}
+        public Time getTime() {
+            return time;
+        }
 
-        public Airport getAirport(){return airport;}
+        public Airport getAirport() {
+            return airport;
+        }
 
-        public priorityQueueAirport minPrice(Airport origin, Airport destination, List<String> days){
-            if (origin == null || destination == null) {
+        public priorityQueueAirport minPrice( Airport destination, List<String> days) {
+            if (this.getAirport() == null || destination == null) {
                 System.out.println("Origin or destiny not specified");
                 return null;
             }
-
-            priorityQueueAirport originNode = new priorityQueueAirport(origin, 0, null, null);
 
             clearMarks();
             PriorityQueue<priorityQueueAirport> priorityQueue = new PriorityQueue<>(new priceComparator());
@@ -86,47 +114,37 @@ public class FlightSystem {
              */
 
             List<Flight> originFlights = new ArrayList<>();
-            originFlights.addAll(origin.getFlights());
-            originFlights.sort(new Comparator<Flight>() {
-                @Override
-                public int compare(Flight f1, Flight f2) {
-                    if (f1.getPrice() > f2.getPrice())
-                        return 1;
-                    else if (f1.getPrice() < f2.getPrice())
-                        return -1;
-                    else
-                        return 0;
-                }
-            });
+            originFlights.addAll(this.getAirport().getFlights());
+            originFlights.sort(new flightComparator());
 
             int i;
-            for(String day : days){
-                i=0;
-                while(!originFlights.get(i).getFlightDays().contains(day)){
+            for (String day : days) {
+                i = 0;
+                while (!originFlights.get(i).getFlightDays().contains(day)) {
                     i++;
                 }
-                if(i!=originFlights.size()){
+                if (i != originFlights.size()) {
                     priorityQueue.offer(new priorityQueueAirport(originFlights.get(i).getDestination(),
-                            originFlights.get(i).getPrice(), originFlights.get(i), originNode));
+                            originFlights.get(i).getPrice(), originFlights.get(i), this));
                 }
 
             }
-            origin.visited = true;
+            this.getAirport().visited = true;
 
             /**
              * Dijkstra's algorithm starting from the second step with price priority
              */
 
-            while (!priorityQueue.isEmpty()){
+            while (!priorityQueue.isEmpty()) {
                 aux = priorityQueue.poll();
 
                 if (aux.getAirport() == destination)
+                    return aux;
 
-
-                if (!aux.getAirport().visited){
+                if (!aux.getAirport().visited) {
                     aux.getAirport().visited = true;
 
-                    for (Flight f : aux.getAirport().getFlights()){
+                    for (Flight f : aux.getAirport().getFlights()) {
                         if (!f.getDestination().visited)
                             priorityQueue.offer(new priorityQueueAirport(f.getDestination(),
                                     aux.getPrice() + f.getPrice(), f, aux));
@@ -135,59 +153,79 @@ public class FlightSystem {
             }
             return aux;
         }
-
-        public Itinerary setItinerary(Airport origin, Airport destination, List<String> days){
-            //public Itinerary(double price, Time totalFlightTime, Time flightTime, List<Flight> flights)
-            priorityQueueAirport node = minPrice(origin, destination, days);
-            double price = node.getPrice();
-
-            Time cummulativeFlightTime = new Time(0,0); //time without waiting between planes
-            Time cummulativeTotalFlightTime = new Time(0,0); //time with wait between planes
-
-
-            ArrayList<FlightAndDay> flights = new ArrayList<FlightAndDay>();
-            recursivePath(node, flights); //metemos la lista de flights en flights
-            Collections.reverse(flights); //queremos la lista desde origin hasta destination y no al reves
-
-
-            int i = 0;
-            while(!flights.get(0).getFlight().getFlightDays().contains(days.get(i)))
-                i++;
-            //elijo arbitrariamente el primer dia de despegue para el primer vuelo
-
-            flights.get(0).setDay(new Day(days.get(i)));
-            cummulativeFlightTime.setMinutes(cummulativeFlightTime.getMinutes() +
-                    flights.get(0).getFlight().getDuration().getMinutes());
-            //adds the duration of the first flight to the cummulative flight time
-
-            cummulativeTotalFlightTime.setMinutes(cummulativeTotalFlightTime.getMinutes() +
-                    flights.get(0).getFlight().getDuration().getMinutes());
-            //adds the duration of the first flight to the cummulative total flight time
-
-
-            for(int j=1; j < flights.size(); j++){
-               cummulativeFlightTime.setMinutes(flights.get(j).getFlight().getDuration().getMinutes() +
-                       cummulativeFlightTime.getMinutes());
-               //sumar a flight time lo que le pasas a add
-                flights.get(j).setDay(new Day (flights.get(j).getFlight().getFlightDays().get(0)));
-                //set the day for the flight departure
-
-               }
-
-
-            Itinerary itinerary = new Itinerary(price, cummulativeTotalFlightTime, cummulativeFlightTime, flights);
-            return itinerary;
-        }
-
-
-        public void recursivePath(priorityQueueAirport node, ArrayList<FlightAndDay> flights){
-            if(node == null){
-                return;
-            }
-            flights.add(new FlightAndDay(node.previousFlight, null));
-            recursivePath(node.previousAirport, flights);
-        }
     }
 
 
+    /**
+     * Sets the itinerary according to the priority given. This method calls the algorithm that completes the transverse
+     * of the graph.
+     * MOMENTARY: ONLY IMPLEMENTED FOR PRICE PRIORITY
+     */
+
+    public Itinerary setItinerary(Airport origin, Airport destination, List<String> days, String priority){
+
+        //call to get the lowest priced journey
+        priorityQueueAirport originPQ = new priorityQueueAirport(origin, 0, null,  null);
+        priorityQueueAirport node = originPQ.minPrice(destination, days);
+
+        double price = node.getPrice();
+
+        Time cummulativeFlightTime = new Time(0,0); //time without waiting between planes
+        Time cummulativeTotalFlightTime = new Time(0,0); //time with wait between planes
+
+        ArrayList<ItineraryFlightInfo> flights = new ArrayList<>();
+        recursivePath(node, flights); //metemos la lista de flights en flights
+        Collections.reverse(flights); //queremos la lista desde origin hasta destination y no al reves
+
+
+        int i = 0;
+        while(!flights.get(0).getFlight().getFlightDays().contains(days.get(i)))
+            i++;
+        //elijo arbitrariamente el primer dia de despegue para el primer vuelo
+
+        flights.get(0).setDepartureDay(new Day(days.get(i)));
+        cummulativeFlightTime.setMinutes(cummulativeFlightTime.getAllMinutes() +
+                flights.get(0).getFlight().getDuration().getAllMinutes());
+        //adds the duration of the first flight to the cummulative flight time
+
+        cummulativeTotalFlightTime.setMinutes(cummulativeTotalFlightTime.getAllMinutes() +
+                flights.get(0).getFlight().getDuration().getAllMinutes());
+        //adds the duration of the first flight to the cummulative total flight time
+
+
+        for(int j=1; j < flights.size(); j++){
+            //adds the duration of the flight to the cummulative flight time
+           cummulativeFlightTime.setMinutes(flights.get(j).getFlight().getDuration().getAllMinutes() +
+                   cummulativeFlightTime.getAllMinutes());
+
+            //ARBITRARILY choose the day the flight will depart
+            flights.get(j).setDepartureDay(new Day (flights.get(j).getFlight().getFlightDays().get(0)));
+            //Day and time the user arrived at the airport from the last flight
+            Day arrivalDay = flights.get(j-1).getArrivalDay();
+            Time arrivalTime = flights.get(j-1).getArrivalTime();
+
+            double waitingMinutes = (flights.get(j).getDepartureDay().getDayNumber()* ItineraryFlightInfo.HOURS* ItineraryFlightInfo.MINUTES
+                    + flights.get(j).getDepartureTime().getAllMinutes()) -
+                    ((arrivalDay.getDayNumber()* ItineraryFlightInfo.HOURS* ItineraryFlightInfo.MINUTES + arrivalTime.getAllMinutes()));
+
+            if (waitingMinutes < 0 ){
+                waitingMinutes += ItineraryFlightInfo.WEEKDAYS* ItineraryFlightInfo.HOURS* ItineraryFlightInfo.MINUTES;
+            }
+
+            cummulativeTotalFlightTime.setMinutes(flights.get(j).getFlight().getDuration().getAllMinutes() +
+                    waitingMinutes);
+           }
+
+        Itinerary itinerary = new Itinerary(price, cummulativeTotalFlightTime, cummulativeFlightTime, flights);
+
+        return itinerary;
+    }
+
+    public void recursivePath(priorityQueueAirport node, ArrayList<ItineraryFlightInfo> flights){
+        if(node == null)
+            return;
+
+        flights.add(new ItineraryFlightInfo(node.previousFlight));
+        recursivePath(node.previousAirport, flights);
+    }
 }
