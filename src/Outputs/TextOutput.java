@@ -7,7 +7,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,7 +29,7 @@ import java.util.List;
  */
 
 public class TextOutput {
-    public void createText(boolean itineraryMade, String price, Outputs.Time flightTime, Outputs.Time totalTime, List<Flight> flights, List<String> days) throws IOException{
+    public void createText(boolean itineraryMade, String price, Graph.Time flightTime, Graph.Time totalTime, List<Flight> flights, List<String> days) throws IOException{
         BufferedWriter writer = null;
         try {
             //create a temporary file
@@ -76,16 +75,16 @@ public class TextOutput {
         TextOutput textOutput = new TextOutput();
 
         String price = "5708.23";
-        Outputs.Time flightTime = new Outputs.Time(17,8);
-        Outputs.Time totalTime = new Outputs.Time(20,48);
+        Graph.Time flightTime = new Graph.Time(17,8);
+        Graph.Time totalTime = new Graph.Time(20,48);
 
         double price1 = 100;
         double price2 = 200;
         double price3 = 500;
         double price4 = 5708.23-price1-price2-price3;
 
-        Time departure = new Time(100);
-        Time duration = new Time(200);
+        Graph.Time departure = new Graph.Time(0,100);
+        Graph.Time duration = new Graph.Time(0,200);
         List<String> days1 = new ArrayList<>();
         days1.add("Lu");
         Airport origin1 = new Airport("BUE",0,1);
