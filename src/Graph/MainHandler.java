@@ -46,6 +46,9 @@ public class MainHandler {
                                     ValidateData.validateLat(aux[3]); //aux[3] is lat
                                     ValidateData.validateLon(aux[4]); //aux[4] is long
 
+                                    Integer lat = Integer.parseInt(aux[3]);
+                                    Integer lon = Integer.parseInt(aux[4]);
+
                                     Airport auxAirport = new Airport(aux[2], Integer.parseInt(aux[3]),
                                             Integer.parseInt(aux[4]));
 
@@ -86,10 +89,23 @@ public class MainHandler {
                                     boolean state2 = ValidateData.validateDay(aux[4]) && ValidateData.validateOrigin(aux[5]);
                                     boolean state3 = ValidateData.validateDestiny(aux[6]) && ValidateData.validateTime(aux[7]);
                                     boolean state4 = ValidateData.validateLong(aux[8]) && ValidateData.validatePrice(aux[9]);
+
                                     if (!(state1 && state2 && state3 && state4))
                                         System.out.println("Wrong input");
-                                    else {
-                                        //Call insert
+                                    else {//I should call insert here
+                                        String aeroName = aux[2];
+                                        String flightNumber = aux[3];
+                                        String[] days = aux[4].split("-");
+                                        String origName = aux[5];
+                                        String destName = aux[6];
+                                        String[] aux2 = aux[7].split(":");
+                                        Integer hour = Integer.parseInt(aux2[0]);
+                                        Integer min = Integer.parseInt(aux2[1]);
+                                        char[] aux3 = aux[8].toCharArray();
+                                        //We assume a flight cant last more than 99hs
+                                        Integer longInH = Integer.parseInt(String.valueOf(aux[1]) + String.valueOf(aux[2]));
+                                        Integer longInM = Integer.parseInt(String.valueOf(aux[6]) + String.valueOf(aux[7]));
+                                        Double price = Double.valueOf(aux[9]);
                                     }
                                 }
                                 break;
