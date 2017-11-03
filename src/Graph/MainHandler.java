@@ -12,14 +12,15 @@ import java.io.IOException;
 public class MainHandler {
 
     private static final String EXIT_COMMAND = "exit";
+    private FlightSystem flightSystem;
 
     public MainHandler(){
-
+        flightSystem = new FlightSystem();
     }
 
     /**
      * The handler's main task, running the project asking the user for input and translating that action to an
-     * operation to the AVL tree, the blockchain or both.
+     * operation to the FlightSystem.
      */
     public void runCode() {
         String input = null;
@@ -41,11 +42,20 @@ public class MainHandler {
                                 case "airport":
                                     if ( (aux.length != 5)) System.out.println("Wrong input");
                                     else{
-                                        ValidateData.validateName(aux[2]); //aux[3] is name
-                                        ValidateData.validateLat(aux[3]); //aux[4] is lat
-                                        ValidateData.validateLon(aux[4]); //aux[5] is long
-                                        System.out.println("Inserted airport " + aux[2]);
-                                        //I should call here something like insertAirport(aux[3], aux[4], aux[5]);
+                                        ValidateData.validateName(aux[2]); //aux[2] is name
+                                        ValidateData.validateLat(aux[3]); //aux[3] is lat
+                                        ValidateData.validateLon(aux[4]); //aux[4] is long
+
+                                        Airport auxAirport = new Airport(aux[2], Integer.parseInt(aux[3]),
+                                                Integer.parseInt(aux[4]));
+
+                                        if (flightSystem.getAirports().contains(auxAirport)){
+                                            System.out.println("Airport already exists");
+                                        }
+                                        else {
+                                            System.out.println("Inserted airport " + aux[2]);
+                                            flightSystem.addAirport(auxAirport);
+                                        }
                                     }
                                     break;
                                 case "all":
@@ -87,13 +97,18 @@ public class MainHandler {
                                  case "airport":
                                      if (!(aux.length == 3)) System.out.println("Wrong input");
                                      else{
-                                         System.out.println("Deleting airport "+ aux[2]);
+                                         if (flightSystem.deleteAirport(aux[2]))
+                                            System.out.println("Deleting airport "+ aux[2]);
+                                         else
+                                             System.out.println("Airport " + aux[2] + " does not exist");
                                      }
                                      break;
                                  case "flight":
                                      if (!(aux.length == 4)) System.out.println("Wrong input");
                                      else{
                                          System.out.println("Deleting flight "+aux[2]+ " - " + aux[3]);
+
+
                                      }
                                      break;
                                  case "all":
@@ -102,8 +117,10 @@ public class MainHandler {
 
                                          if (aux[2].equals("airport")) {
                                              System.out.println("Deleting all airports");
+                                             flightSystem.deleteAllAirports();
                                          } else if (aux[2].equals("flight")) {
                                              System.out.println("Deleting all flights");
+                                             flightSystem.deleteAllFlights();
                                          } else
                                              System.out.println("Wrong input");
                                      }
@@ -111,7 +128,6 @@ public class MainHandler {
                                  default:
                                      System.out.println("Wrong input");
                                      break;
-
                              }
                          }
                          else {
@@ -180,6 +196,8 @@ public class MainHandler {
         }
         else System.out.println("Wrong input");
     }
+
+    public FlightSystem getFlightSystem(){return flightSystem;}
 
     public static void main(String[] args) {
         MainHandler mainHandler = new MainHandler();
