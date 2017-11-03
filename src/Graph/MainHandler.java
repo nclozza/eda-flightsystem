@@ -71,6 +71,17 @@ public class MainHandler {
                                     if ( !(aux.length == 10)) System.out.println("Wrong input");
                                     else{
                                         System.out.println("Inserting flight " + aux[2] + " - " + aux[3]);
+                                        //**insert flight (aerolinea) (nroVuelo) (diasSemana) (origen) (destino)
+                                        // (horaSalida) (duracion) (precio)** *ver comentario para detalles*
+                                        boolean state1 = ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]);
+                                        boolean state2 = ValidateData.validateDay(aux[4]) && ValidateData.validateOrigin(aux[5]);
+                                        boolean state3 = ValidateData.validateDestiny(aux[6]) && ValidateData.validateTime(aux[7]);
+                                        boolean state4 = ValidateData.validateLong(aux[8]) && ValidateData.validatePrice(aux[9]);
+                                        if (! (state1 && state2 && state3 && state4))
+                                            System.out.println("Wrong input");
+                                        else{
+                                            //Call insert
+                                        }
                                     }
                                     break;
                                 default:
@@ -81,25 +92,35 @@ public class MainHandler {
                             System.out.println("Wrong input");
                         }
                         break;
-                    case "delete":
+                    case "delete": //Here we should check if airport and flight exists, not validate the name
                          if(aux.length>=2){
                              switch (aux[1]){
                                  case "airport":
-                                     if (!(aux.length == 3)) System.out.println("Wrong input");
+                                     if (!(aux.length == 3))
+                                         System.out.println("Wrong input");
                                      else{
-                                         System.out.println("Deleting airport "+ aux[2]);
+                                         if (!ValidateData.validateName(aux[2])) {
+                                             System.out.println("Deleting airport " + aux[2]);
+                                         }
+                                         else
+                                             System.out.println("The airport you want to delete does not exist");
                                      }
                                      break;
                                  case "flight":
-                                     if (!(aux.length == 4)) System.out.println("Wrong input");
+                                     if (!(aux.length == 4))
+                                         System.out.println("Wrong input");
                                      else{
-                                         System.out.println("Deleting flight "+aux[2]+ " - " + aux[3]);
+                                         if ( ! (ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]))){
+                                             System.out.println("Deleting flight "+aux[2]+ " - " + aux[3]);
+                                         } else {
+                                             System.out.println("The flight you want to delete does not exist");
+                                         }
                                      }
                                      break;
                                  case "all":
-                                     if (!(aux.length == 3)) System.out.println("Wrong input");
+                                     if (!(aux.length == 3))
+                                         System.out.println("Wrong input");
                                      else{
-
                                          if (aux[2].equals("airport")) {
                                              System.out.println("Deleting all airports");
                                          } else if (aux[2].equals("flight")) {
@@ -111,7 +132,6 @@ public class MainHandler {
                                  default:
                                      System.out.println("Wrong input");
                                      break;
-
                              }
                          }
                          else {
