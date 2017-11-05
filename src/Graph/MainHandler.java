@@ -49,6 +49,7 @@ public class MainHandler {
                                     Integer lat = Integer.parseInt(aux[3]);
                                     Integer lon = Integer.parseInt(aux[4]);
 
+
                                     Airport auxAirport = new Airport(aux[2], lat, lon);
 
                                     if (flightSystem.getAirports().contains(auxAirport)) {
@@ -85,6 +86,7 @@ public class MainHandler {
                                     boolean state2 = ValidateData.validateDay(aux[4]) && ValidateData.validateOrigin(aux[5], flightSystem);
                                     boolean state3 = ValidateData.validateDestiny(aux[6], flightSystem) && ValidateData.validateTime(aux[7]);
                                     boolean state4 = ValidateData.validateLong(aux[8]) && ValidateData.validatePrice(aux[9]);
+
                                     if (!(state1 && state2 && state3 && state4))
                                         System.out.println("Wrong input");
                                     else {
@@ -93,7 +95,7 @@ public class MainHandler {
                                         String[] days = aux[4].split("-");
                                         ArrayList<String> daysList = new ArrayList<>();
 
-                                        for (int i=0; i<days.length; i++)
+                                        for (int i = 0; i < days.length; i++)
                                             daysList.add(days[i]);
 
                                         String origName = aux[5];
@@ -102,10 +104,10 @@ public class MainHandler {
                                         boolean notFound = true;
                                         Airport airportAuxOrigin = null;
                                         int originIndex;
-                                        for (originIndex = 0; originIndex<flightSystem.getAirports().size() && notFound; originIndex++){
+                                        for (originIndex = 0; originIndex < flightSystem.getAirports().size() && notFound; originIndex++) {
                                             if (flightSystem.getAirports().get(originIndex).getName().equals(origName))
                                                 airportAuxOrigin = flightSystem.getAirports().get(originIndex);
-                                                notFound = false;
+                                            notFound = false;
                                         }
 
                                         if (notFound) {
@@ -115,7 +117,7 @@ public class MainHandler {
 
                                         notFound = true;
                                         Airport airportAuxDestination = null;
-                                        for (int i = 0; i<flightSystem.getAirports().size() && notFound; i++){
+                                        for (int i = 0; i < flightSystem.getAirports().size() && notFound; i++) {
                                             if (flightSystem.getAirports().get(i).getName().equals(destName))
                                                 airportAuxDestination = flightSystem.getAirports().get(i);
                                             notFound = false;
