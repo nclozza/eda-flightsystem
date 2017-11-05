@@ -1,5 +1,8 @@
 package InputHandler;
 
+import Graph.Airport;
+import Graph.FlightSystem;
+
 public class ValidateData {
 
     //In this class we validate data
@@ -74,16 +77,18 @@ public class ValidateData {
         return true;
     }
 
-    public static boolean validateOrigin(String origin) {
+    public static boolean validateOrigin(String origin, FlightSystem flightSystem) {
+        for (Airport a : flightSystem.getAirports())
+            if (a.getName().equals(origin))
+                return true;
         return false;
-        //I should check if origin is a valid airport. It means that
-        //origin is registered
     }
 
-    public static boolean validateDestiny(String destiny){
+    public static boolean validateDestiny(String destiny, FlightSystem flightSystem){
+        for (Airport a : flightSystem.getAirports())
+            if (a.getName().equals(destiny))
+                return true;
         return false;
-        //I should check if destiny is a valid airport. It means that
-        //destiny is registered
     }
 
     public static boolean validateTime(String time){
@@ -98,13 +103,13 @@ public class ValidateData {
         return true;
     }
 
-    public static boolean validateLineFile(String line){
+    public static boolean validateLineFile(String line, FlightSystem flightSystem){
         //[aerolinea]#[nroVuelo]#[diasSemana]#[origen]#[destino]#[horaSalida]#[duracion]#[precio]
         String aux[] = line.split("#");
         if (aux.length != 8) return false;
         boolean check = validateName(aux[0]) && validateFlightNumber(aux[1]);
-        boolean check2 = validateDay(aux[2]) && validateOrigin(aux[3]);
-        boolean check3 = validateDestiny(aux[4]) && validateTime(aux[5]);
+        boolean check2 = validateDay(aux[2]) && validateOrigin(aux[3], flightSystem);
+        boolean check3 = validateDestiny(aux[4], flightSystem) && validateTime(aux[5]);
         boolean check4 = validateLong(aux[6]) && validatePrice(aux[7]);
         return check && check2 && check3 && check4;
     }
