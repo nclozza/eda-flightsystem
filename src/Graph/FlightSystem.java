@@ -42,6 +42,15 @@ public class FlightSystem {
         }
     }
 
+    public Airport getAirport(String airport) {
+        for (Airport eachAirport : airports) {
+            if (airport.equals(eachAirport.getName())) {
+                return eachAirport;
+            }
+        }
+        return null;
+    }
+
     public List<Airport> getAirports(){
         return airports;
     }
