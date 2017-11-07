@@ -54,6 +54,10 @@ public class Airport {
         flights.add(flight);
     }
 
+    //public boolean deleteFlight(){}
+
+    public void deleteAllFlights(){flights.clear();}
+
     /**
      * Two airports are said to be equal if their name is equal.
      * @param obj The object, preferably an airport, to be compared against this airport.

@@ -1,15 +1,11 @@
 package Outputs;
 
 
-import Graph.Airport;
 import Graph.Flight;
-import Graph.Time;
 import de.micromata.opengis.kml.v_2_2_0.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.util.List;
 
 /**
  * Created by cderienzo on 10/24/2017.
@@ -34,7 +30,7 @@ public class KMLOutput {
         kml.marshal(new File("itineraryKML.kml"));
     }
 
-    public static void main(String[] args) throws IOException {
+    /*public static void main(String[] args) throws IOException {
         KMLOutput kmlOutput = new KMLOutput();
 
         String price = "5708.23";
@@ -80,5 +76,5 @@ public class KMLOutput {
         days.add("Mi");
         days.add("Ju");
         kmlOutput.createKML(flights);
-    }
+    }*/
 }

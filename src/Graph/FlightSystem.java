@@ -24,6 +24,24 @@ public class FlightSystem {
         airports.add(airport);
     }
 
+    public boolean deleteAirport(String airportName){
+        for (Airport a : airports){
+            if (a.getName().equals(airportName)) {
+                airports.remove(a);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void deleteAllAirports(){airports.clear();}
+
+    public void deleteAllFlights(){
+        for (Airport a : airports){
+            a.deleteAllFlights();
+        }
+    }
+
     public List<Airport> getAirports(){
         return airports;
     }

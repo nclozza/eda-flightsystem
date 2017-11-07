@@ -1,6 +1,5 @@
 package Outputs;
 
-import Graph.Airport;
 import Graph.Flight;
 
 import java.io.BufferedWriter;
@@ -8,7 +7,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -71,7 +69,7 @@ public class TextOutput {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    /*public static void main(String[] args) throws IOException {
         TextOutput textOutput = new TextOutput();
 
         String price = "5708.23";
@@ -121,5 +119,5 @@ public class TextOutput {
         days.add("Ju");
 
         textOutput.createText(false,price,flightTime,totalTime,flights,days);
-    }
+    }*/
 }
