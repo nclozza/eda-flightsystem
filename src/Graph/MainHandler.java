@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 
@@ -52,14 +53,11 @@ public class MainHandler {
                   Integer lat = Integer.parseInt(aux[3]);
                   Integer lon = Integer.parseInt(aux[4]);
 
-
-                  Airport auxAirport = new Airport(aux[2], lat, lon);
-
-                  if (flightSystem.getAirports().contains(auxAirport)) {
+                  if (flightSystem.getAirport(aux[2]) != null) {
                     System.out.println("Airport already exists");
                   } else {
                     System.out.println("Inserted airport " + aux[2]);
-                    flightSystem.addAirport(auxAirport);
+                    flightSystem.addAirport(aux[2], lat, lon);
                   }
                 }
                 break;
@@ -69,7 +67,7 @@ public class MainHandler {
                     if (aux.length == 5) {
                       String path = aux[3];
                       LinkedList<String> airports = processingFile(path);
-                      addAirportsFromFile(airports, aux[4] == "replace"); //aux[4] is append or replace
+                      addAirportsFromFile(airports, aux[4].equals("replace")); //aux[4] is append or replace
                       System.out.println(aux[4].toUpperCase() + " all airports");
                     } else
                       System.out.println("Wrong input");
@@ -77,7 +75,7 @@ public class MainHandler {
                     if (aux.length == 5) {
                       String path = aux[3];
                       LinkedList<String> flights = processingFile(path);
-                      addFlightsFromFile(flights, aux[4] == "replace"); //aux[4] is append or replace
+                      addFlightsFromFile(flights, aux[4].equals("replace")); //aux[4] is append or replace
                       System.out.println(aux[4].toUpperCase() + " all flights");
                     } else
                       System.out.println("Wrong input");
@@ -100,8 +98,7 @@ public class MainHandler {
                     String[] days = aux[4].split("-");
                     ArrayList<String> daysList = new ArrayList<>();
 
-                    for (int i = 0; i < days.length; i++)
-                      daysList.add(days[i]);
+                    daysList.addAll(Arrays.asList(days));
 
                     String origName = aux[5];
                     String destName = aux[6];
@@ -109,9 +106,9 @@ public class MainHandler {
                     boolean notFound = true;
                     Airport airportAuxOrigin = null;
                     int originIndex;
-                    for (originIndex = 0; originIndex < flightSystem.getAirports().size() && notFound; originIndex++) {
-                      if (flightSystem.getAirports().get(originIndex).getName().equals(origName))
-                        airportAuxOrigin = flightSystem.getAirports().get(originIndex);
+                    for (originIndex = 0; originIndex < flightSystem.getAirportList().size() && notFound; originIndex++) {
+                      if (flightSystem.getAirportList().get(originIndex).getName().equals(origName))
+                        airportAuxOrigin = flightSystem.getAirportList().get(originIndex);
                       notFound = false;
                     }
 
@@ -122,9 +119,9 @@ public class MainHandler {
 
                     notFound = true;
                     Airport airportAuxDestination = null;
-                    for (int i = 0; i < flightSystem.getAirports().size() && notFound; i++) {
-                      if (flightSystem.getAirports().get(i).getName().equals(destName))
-                        airportAuxDestination = flightSystem.getAirports().get(i);
+                    for (int i = 0; i < flightSystem.getAirportList().size() && notFound; i++) {
+                      if (flightSystem.getAirportList().get(i).getName().equals(destName))
+                        airportAuxDestination = flightSystem.getAirportList().get(i);
                       notFound = false;
                     }
 
@@ -136,7 +133,6 @@ public class MainHandler {
                     String[] aux2 = aux[7].split(":");
                     Integer hour = Integer.parseInt(aux2[0]);
                     Integer min = Integer.parseInt(aux2[1]);
-                    char[] aux3 = aux[8].toCharArray(); //We assume a flight cant last more than 99hs
                     String duration[] = aux[8].split("h");
                     duration[1] = duration[1].replace("m", "");
                     Integer longInH = Integer.parseInt(duration[0]);
@@ -148,7 +144,7 @@ public class MainHandler {
 
                     System.out.println("Inserting flight " + aux[2] + " - " + aux[3]);
 
-                    flightSystem.getAirports().get(originIndex).addFlight(auxFlight);
+                    flightSystem.getAirportList().get(originIndex).addFlight(auxFlight);
                   }
                 }
                 break;
@@ -184,14 +180,19 @@ public class MainHandler {
                 if (!(aux.length == 3)) System.out.println("Wrong input");
                 else {
 
-                  if (aux[2].equals("airport")) {
-                    System.out.println("Deleting all airports");
-                    flightSystem.deleteAllAirports();
-                  } else if (aux[2].equals("flights")) {
-                    System.out.println("Deleting all flights");
-                    flightSystem.deleteAllFlights();
-                  } else
-                    System.out.println("Wrong input");
+                  switch (aux[2]) {
+                    case "airport":
+                      System.out.println("Deleting all airports");
+                      flightSystem.deleteAllAirports();
+                      break;
+                    case "flights":
+                      System.out.println("Deleting all flights");
+                      flightSystem.deleteAllFlights();
+                      break;
+                    default:
+                      System.out.println("Wrong input");
+                      break;
+                  }
                 }
                 break;
               default:
@@ -214,9 +215,7 @@ public class MainHandler {
             Airport destination = flightSystem.getAirport(aux[2]);
             String days[] = aux[4].split("-");
             LinkedList<String> daysList = new LinkedList<>();
-            for (String eachDay : days) {
-              daysList.add(eachDay);
-            }
+            daysList.addAll(Arrays.asList(days));
 
             Itinerary itinerary = flightSystem.setItinerary(origin, destination, daysList, aux[3]);
 
@@ -237,19 +236,29 @@ public class MainHandler {
           if (aux.length != 3) {
             System.out.println("Wrong input");
           } else {
-            if (aux[1].equals("text")) {
-              //Do something
-            } else if (aux[1].equals("KML")) {
-              //Do something
-            } else
-              System.out.println("Wrong input");
+            switch (aux[1]) {
+              case "text":
+                //Do something
+                break;
+              case "KML":
+                //Do something
+                break;
+              default:
+                System.out.println("Wrong input");
+                break;
+            }
 
-            if (aux[2].equals("archivo")) {
-              //Do something
-            } else if (aux[2].equals("stdout")) {
-              //Do something
-            } else
-              System.out.println("Wrong input");
+            switch (aux[2]) {
+              case "archivo":
+                //Do something
+                break;
+              case "stdout":
+                //Do something
+                break;
+              default:
+                System.out.println("Wrong input");
+                break;
+            }
           }
           break;
         default:
@@ -265,11 +274,12 @@ public class MainHandler {
     if (clear) {
       flightSystem.deleteAllAirports();
     }
+
     for (String eachAirport : airportsFromFile) {
       String aux[] = eachAirport.split("#");
-      if (flightSystem.getAirport(aux[0]) != null) {
-        Airport airport = new Airport(aux[0], Double.parseDouble(aux[1]), Double.parseDouble(aux[2]));
-        flightSystem.addAirport(airport);
+
+      if (flightSystem.getAirport(aux[0]) == null) {
+        flightSystem.addAirport(aux[0], Double.parseDouble(aux[1]), Double.parseDouble(aux[2]));
       }
     }
   }
@@ -278,17 +288,13 @@ public class MainHandler {
     if (clear) {
       flightSystem.deleteAllAirports();
     }
+
     for (String eachFlight : flightsFromFile) {
       String aux[] = eachFlight.split("#");
 
       String days[] = aux[2].split("-");
       LinkedList<String> daysList = new LinkedList<>();
-      for (String eachDay : days) {
-        daysList.add(eachDay);
-      }
-
-      Airport airportOrigin = flightSystem.getAirport(aux[3]);
-      Airport airportDestination = flightSystem.getAirport(aux[4]);
+      daysList.addAll(Arrays.asList(days));
 
       String departureHour[] = aux[5].split(":");
       Time departureTime = new Time(Integer.parseInt(departureHour[0]), Integer.parseInt(departureHour[1]));
@@ -297,12 +303,9 @@ public class MainHandler {
       duration[1] = duration[1].replace("m", "");
       Time durationTime = new Time(Integer.parseInt(duration[0]), Integer.parseInt(duration[1]));
 
-      if (airportOrigin == null || airportDestination == null) {
-        System.out.println("Some Airport it's not supported");
-      } else {
-        Flight flight = new Flight(aux[0], Integer.parseInt(aux[1]), daysList, airportOrigin, airportDestination, departureTime, durationTime, Double.parseDouble(aux[7]));
-        airportOrigin.addFlight(flight);
-      }
+      flightSystem.addFlight(aux[0], Integer.parseInt(aux[1]), daysList, aux[3], aux[4],
+                                departureTime, durationTime, Double.parseDouble(aux[7]));
+
     }
   }
 
@@ -331,10 +334,4 @@ public class MainHandler {
   public FlightSystem getFlightSystem() {
     return flightSystem;
   }
-
-  public static void main(String[] args) {
-    MainHandler mainHandler = new MainHandler();
-    mainHandler.runCode();
-  }
-
 }

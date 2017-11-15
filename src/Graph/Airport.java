@@ -32,10 +32,10 @@ public class Airport {
      * Variable that marks a node if it was visited during a transversion of the graph
      */
 
-    public boolean visited = false;
+    boolean visited = false;
 
 
-    public Airport(String name, double latitude, double longitude) {
+    Airport(String name, double latitude, double longitude) {
         this.name = name;
         position = new Coordinate(latitude, longitude);
         flights = new LinkedList<>();
@@ -50,13 +50,13 @@ public class Airport {
      * theory it creates a new arc between this airport and another.
      * @param flight The outbound or return flight to be added to the flights list.
      */
-    public void addFlight(Flight flight) {
+    void addFlight(Flight flight) {
         flights.add(flight);
     }
 
     //public boolean deleteFlight(){}
 
-    public void deleteAllFlights(){flights.clear();}
+    void deleteAllFlights(){flights.clear();}
 
     /**
      * Two airports are said to be equal if their name is equal.
@@ -89,7 +89,7 @@ public class Airport {
         return position;
     }
 
-    public List<Flight> getFlights(){
+    List<Flight> getFlights() {
         return flights;
     }
 

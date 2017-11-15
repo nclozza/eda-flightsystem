@@ -48,8 +48,8 @@ public class Flight {
     private double price;
 
 
-    public Flight(String airline, int flightNr, List<String> flightDays, Airport origin, Airport destination,
-                  Time departureTime, Time duration, double price) {
+    Flight(String airline, int flightNr, List<String> flightDays, Airport origin, Airport destination,
+           Time departureTime, Time duration, double price) {
         this.airline = airline;
         this.flightNr = flightNr;
         this.flightDays = flightDays;
@@ -69,7 +69,7 @@ public class Flight {
         return flightNr;
     }
 
-    public List<String> getFlightDays() {
+    List<String> getFlightDays() {
         return flightDays;
     }
 
@@ -81,15 +81,15 @@ public class Flight {
         return destination;
     }
 
-    public Time getDepartureTime() {
+    Time getDepartureTime() {
         return departureTime;
     }
 
-    public Time getDuration() {
+    Time getDuration() {
         return duration;
     }
 
-    public double getPrice() {
+    double getPrice() {
         return price;
     }
 

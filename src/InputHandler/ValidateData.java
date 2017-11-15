@@ -15,10 +15,7 @@ public class ValidateData {
         Double aux;
         try {
             aux = Double.parseDouble(lat);
-            if (aux >= -90 && aux <= 90){
-                return true;
-            }
-            return false;
+            return aux >= -90 && aux <= 90;
         } catch (Exception e) {
             return false;
         }
@@ -28,10 +25,7 @@ public class ValidateData {
         Double aux;
         try {
             aux = Double.parseDouble(lat);
-            if (aux >= -180 && aux <= 180){
-                return true;
-            }
-            return false;
+            return aux >= -180 && aux <= 180;
         } catch (Exception e) {
             return false;
         }
@@ -56,9 +50,7 @@ public class ValidateData {
         Integer auxH = Integer.parseInt(hour);
         if ( ! (auxH>= 0) ) return false;
         Integer auxM = Integer.parseInt(min);
-        if ( !(auxM >= 0 && auxM <= 59)) return false;
-
-        return true;
+        return auxM >= 0 && auxM <= 59;
     }
 
     public static boolean validatePrice(String price) {
@@ -73,16 +65,16 @@ public class ValidateData {
 
     public static boolean validateDay(String days) {
         String[] aux = days.split("-");
-        for (int i = 0; i < aux.length; i++)
-            if (!(aux[i].equals("Lu") || aux[i].equals("Ma") || aux[i].equals("Mi") || aux[i].equals("Ju") || aux[i].equals("Vi")
-                    || aux[i].equals("Sa") || aux[i].equals("Do")))
+        for (String each : aux)
+            if (!(each.equals("Lu") || each.equals("Ma") || each.equals("Mi") || each.equals("Ju") || each.equals("Vi")
+                || each.equals("Sa") || each.equals("Do")))
                 return false;
         return true;
     }
 
     public static boolean validateOrigin(String origin, FlightSystem flightSystem) {
         System.out.println(origin);
-        for (Airport a : flightSystem.getAirports())
+        for (Airport a : flightSystem.getAirportList())
             if (a.getName().equals(origin)) {
                 return true;
             }
@@ -91,7 +83,7 @@ public class ValidateData {
 
     public static boolean validateDestiny(String destiny, FlightSystem flightSystem) {
         System.out.println(destiny);
-        for (Airport a : flightSystem.getAirports())
+        for (Airport a : flightSystem.getAirportList())
             if (a.getName().equals(destiny))
                 return true;
         return false;
@@ -118,11 +110,6 @@ public class ValidateData {
             boolean check2 = validateDay(aux[2]) && validateOrigin(aux[3], flightSystem);
             boolean check3 = validateDestiny(aux[4], flightSystem) && validateTime(aux[5]);
             boolean check4 = validateLong(aux[6]) && validatePrice(aux[7]);
-
-//            System.out.println(check);
-//            System.out.println(check2);
-//            System.out.println(check3);
-//            System.out.println(check4);
 
             return check && check2 && check3 && check4;
         } else if (aux.length == 3) {
