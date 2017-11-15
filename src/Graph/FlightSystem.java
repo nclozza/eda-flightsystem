@@ -4,50 +4,87 @@ import java.util.*;
 
 /**
  * The FlightSystem class is a class that represents de Graph class in a standard graph structure.
- * It contains a list of all the "nodes" (airports) and is in charge of adding new ones.
+ * It contains a list of all the "nodes" (airportList) and is in charge of adding new ones.
  * It also contains the methods that iterate over the graph in different ways.
  */
 
 public class FlightSystem {
-    private List<Airport> airports;
+    private List<Airport> airportList;
+    private HashMap<String, Airport> airportHashMap;
 
-    public FlightSystem(){
-        airports = new LinkedList<>();
+    FlightSystem(){
+        airportList = new LinkedList<>();
+        airportHashMap = new HashMap<>();
     }
 
-    public void addAirport(String name, float latitude, float longitude) {
+    void addAirport(String name, double latitude, double longitude) {
         Airport a = new Airport(name, latitude, longitude);
-        airports.add(a);
+        airportList.add(a);
+        airportHashMap.put(name, a);
     }
 
-    public void addAirport(Airport airport){
-        airports.add(airport);
+    public void addAirport(Airport airport) {
+        airportList.add(airport);
+        airportHashMap.put(airport.getName(), airport);
     }
 
-    public boolean deleteAirport(String airportName){
-        for (Airport a : airports){
-            if (a.getName().equals(airportName)) {
-                airports.remove(a);
-                return true;
+    boolean deleteAirport(String airportName) {
+        if (airportHashMap.containsKey(airportName)) {
+            airportHashMap.remove(airportName);
+
+            for (Airport a : airportList) {
+                if (a.getName().equals(airportName)) {
+                    airportList.remove(a);
+                    return true;
+                }
             }
         }
+
         return false;
     }
 
-    public void deleteAllAirports(){airports.clear();}
+    void deleteAllAirports() {
+        airportList.clear();
+        airportHashMap.clear();
+    }
 
-    public void deleteAllFlights(){
-        for (Airport a : airports){
+    void deleteAllFlights(){
+        for (Airport a : airportList){
             a.deleteAllFlights();
         }
     }
 
-    public List<Airport> getAirports(){
-        return airports;
+    Airport getAirport(String airportName) {
+        return airportHashMap.get(airportName);
     }
 
-    public void clearMarks() {
-        for (Airport a : airports) {
+    public List<Airport> getAirportList() {
+        return airportList;
+    }
+
+    public void addFlight(Flight flight) {
+        if (!(airportHashMap.containsKey(flight.getOrigin().getName())
+                && airportHashMap.containsKey(flight.getDestination().getName()))) {
+            throw new IllegalArgumentException("Wrong airports for that flight");
+        }
+
+        airportHashMap.get(flight.getOrigin().getName()).addFlight(flight);
+    }
+
+    void addFlight(String airline, int flightNr, List<String> flightDays, String origin, String destination,
+                   Time departureTime, Time duration, double price) {
+        if (!(airportHashMap.containsKey(origin) && airportHashMap.containsKey(destination))) {
+            throw new IllegalArgumentException("Wrong airports for that flight");
+        }
+
+        Flight flight = new Flight(airline, flightNr, flightDays, airportHashMap.get(origin),
+                                    airportHashMap.get(destination), departureTime, duration, price);
+
+        airportHashMap.get(origin).addFlight(flight);
+    }
+
+    private void clearMarks() {
+        for (Airport a : airportList) {
             a.visited = false;
         }
     }
@@ -96,7 +133,7 @@ public class FlightSystem {
         private Time time;
 
 
-        public priorityQueueAirport(Airport airport, double price, Flight previousFlight, priorityQueueAirport previousAirport) {
+        priorityQueueAirport(Airport airport, double price, Flight previousFlight, priorityQueueAirport previousAirport) {
             this.airport = airport;
             this.price = price;
             this.previousFlight = previousFlight;
@@ -110,19 +147,19 @@ public class FlightSystem {
             this.previousAirport = previousAirport;
         }
 
-        public double getPrice() {
+        double getPrice() {
             return price;
         }
 
-        public Time getTime() {
+        Time getTime() {
             return time;
         }
 
-        public Airport getAirport() {
+        Airport getAirport() {
             return airport;
         }
 
-        public priorityQueueAirport minPath( Airport destination, List<String> days, Comparator<priorityQueueAirport> comparator ) {
+        priorityQueueAirport minPath(Airport destination, List<String> days, Comparator<priorityQueueAirport> comparator) {
             if (this.getAirport() == null || destination == null) {
                 System.out.println("Origin or destination not specified");
                 return null;
@@ -132,7 +169,7 @@ public class FlightSystem {
             PriorityQueue<priorityQueueAirport> priorityQueue = new PriorityQueue<>(comparator);
             priorityQueueAirport aux = null;
 
-            /**
+            /*
              * Modified Djikstra that only queues those flights which depart on one of the given days
              */
 
@@ -154,7 +191,7 @@ public class FlightSystem {
             }
             this.getAirport().visited = true;
 
-            /**
+            /*
              * Dijkstra's algorithm starting from the second step with price priority
              */
 
@@ -185,19 +222,23 @@ public class FlightSystem {
      * The implementation is the same for pr and ft, the only thing that changes is the comparator
      */
 
-    public Itinerary setItinerary(Airport origin, Airport destination, List<String> days, String priority){
+    Itinerary setItinerary(Airport origin, Airport destination, List<String> days, String priority) {
 
         priorityQueueAirport originPQ = new priorityQueueAirport(origin, 0, null,  null);
         priorityQueueAirport node;
 
-        if (priority.equals("pr"))
-             node = originPQ.minPath(destination, days, new priceComparator());
+        switch (priority) {
+            case "pr":
+                node = originPQ.minPath(destination, days, new priceComparator());
+                break;
 
-        else if (priority.equals("ft"))
-            node = originPQ.minPath(destination, days, new timeComparator());
+            case "ft":
+                node = originPQ.minPath(destination, days, new timeComparator());
+                break;
 
-        else
-            return null;
+            default:
+                return null;
+        }
 
         double price = node.getPrice();
 
@@ -247,70 +288,14 @@ public class FlightSystem {
                     waitingMinutes);
            }
 
-        Itinerary itinerary = new Itinerary(price, cummulativeTotalFlightTime, cummulativeFlightTime, flights);
-
-        return itinerary;
+        return new Itinerary(price, cummulativeTotalFlightTime, cummulativeFlightTime, flights);
     }
 
-    public void recursivePath(priorityQueueAirport node, ArrayList<ItineraryFlightInfo> flights){
+    private void recursivePath(priorityQueueAirport node, ArrayList<ItineraryFlightInfo> flights){
         if(node == null || node.previousFlight == null)
             return;
 
         flights.add(new ItineraryFlightInfo(node.previousFlight));
         recursivePath(node.previousAirport, flights);
-    }
-
-    public static void main(String[]args){
-
-        double price1 = 100;
-        double price2 = 200;
-        double price3 = 500;
-        double price4 = 600;
-
-        Graph.Time departure = new Graph.Time(0,100);
-        Graph.Time duration = new Graph.Time(0,200);
-        List<String> days1 = new ArrayList<>();
-        days1.add("Lu");
-        Airport origin1 = new Airport("BUE",0,1);
-        Airport destination1 = new Airport("PAR",2,3);
-
-        List<String> days2 = new ArrayList<>();
-        days2.add("Mi");
-        Airport destination2 = new Airport("LON",2,3);
-
-        List<String> days3 = new ArrayList<>();
-        days3.add("Mi");
-        Airport destination3 = new Airport("MOS",2,3);
-
-        List<String> days4 = new ArrayList<>();
-        days4.add("Ju");
-
-        Flight flight1 = new Flight("AA",1234,days1,origin1,destination1,departure,duration,price1);
-        Flight flight2 = new Flight("AF",678,days2,destination1,destination2,departure,duration,price2);
-        Flight flight3 = new Flight("BA",789,days3,destination2,destination3,departure,duration,price3);
-        Flight flight4 = new Flight("AMA",2324,days4,destination2,destination3,departure,duration,price4);
-
-
-        FlightSystem f = new FlightSystem();
-        f.addAirport(origin1);
-
-        f.addAirport(destination1);
-        f.addAirport(destination2);
-        f.addAirport(destination3);
-
-        f.getAirports().get(0).addFlight(flight1);
-        f.getAirports().get(1).addFlight(flight2);
-        f.getAirports().get(2).addFlight(flight3);
-        f.getAirports().get(2).addFlight(flight4);
-
-        Itinerary it = f.setItinerary(f.getAirports().get(0), f.getAirports().get(3), days1, "pr");
-
-        System.out.println(it.getTotalPrice());
-
-        for (ItineraryFlightInfo flight : it.getFlights()) {
-            System.out.println(flight.getFlight().getOrigin().getName());
-            System.out.println(flight.getFlight().getDestination().getName());
-        }
-
     }
 }

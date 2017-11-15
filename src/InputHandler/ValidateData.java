@@ -8,30 +8,24 @@ public class ValidateData {
     //In this class we validate data
 
     public static boolean validateName(String aero) {
-        return aero.matches(".") && aero.length() > 0 && aero.length() <= 3;
+        return aero.matches("[a-zA-Z]{1,3}");
     }
 
     public static boolean validateLat(String lat){
-        Integer aux;
+        Double aux;
         try {
-            aux = Integer.parseInt(lat);
-            if (aux >= -90 && aux <= 90){
-                return true;
-            }
-            return false;
+            aux = Double.parseDouble(lat);
+            return aux >= -90 && aux <= 90;
         } catch (Exception e) {
             return false;
         }
     }
 
     public static boolean validateLon(String lat){
-        Integer aux;
+        Double aux;
         try {
-            aux = Integer.parseInt(lat);
-            if (aux >= -180 && aux <= 180){
-                return true;
-            }
-            return false;
+            aux = Double.parseDouble(lat);
+            return aux >= -180 && aux <= 180;
         } catch (Exception e) {
             return false;
         }
@@ -41,24 +35,25 @@ public class ValidateData {
         Integer aux;
         try {
             aux = Integer.parseInt(num);
+            return true;
         } catch (Exception e) {
             return false;
         }
-        return false;
     }
 
-    public static boolean validateLong(String longTime){
-        char[] aux = longTime.toCharArray();
+    public static boolean validateLong(String longTime) {
+        String aux[] = longTime.split("h");
+        String hour = aux[0];
+        String min = aux[1];
+        min = min.replace("m", "");
         //We assume a flight cant last more than 99hs
-        Integer auxH = Integer.parseInt(String.valueOf(aux[1]) + String.valueOf(aux[2]));
+        Integer auxH = Integer.parseInt(hour);
         if ( ! (auxH>= 0) ) return false;
-        Integer auxM = Integer.parseInt(String.valueOf(aux[6]) + String.valueOf(aux[7]));
-        if ( !(auxM >= 0 && auxM <= 59)) return false;
-
-        return true;
+        Integer auxM = Integer.parseInt(min);
+        return auxM >= 0 && auxM <= 59;
     }
 
-    public static boolean validatePrice(String price){
+    public static boolean validatePrice(String price) {
         try {
             Double p = Double.valueOf(price);
         } catch (NumberFormatException e){
@@ -70,28 +65,31 @@ public class ValidateData {
 
     public static boolean validateDay(String days) {
         String[] aux = days.split("-");
-        for (int i = 0; i < aux.length; i++)
-            if (!(aux[i].equals("Lu") || aux[i].equals("Ma") || aux[i].equals("Mi") || aux[i].equals("Ju") || aux[i].equals("Vi")
-                    || aux[i].equals("Sa") || aux[i].equals("Do")))
+        for (String each : aux)
+            if (!(each.equals("Lu") || each.equals("Ma") || each.equals("Mi") || each.equals("Ju") || each.equals("Vi")
+                || each.equals("Sa") || each.equals("Do")))
                 return false;
         return true;
     }
 
     public static boolean validateOrigin(String origin, FlightSystem flightSystem) {
-        for (Airport a : flightSystem.getAirports())
-            if (a.getName().equals(origin))
+        System.out.println(origin);
+        for (Airport a : flightSystem.getAirportList())
+            if (a.getName().equals(origin)) {
                 return true;
+            }
         return false;
     }
 
-    public static boolean validateDestiny(String destiny, FlightSystem flightSystem){
-        for (Airport a : flightSystem.getAirports())
+    public static boolean validateDestiny(String destiny, FlightSystem flightSystem) {
+        System.out.println(destiny);
+        for (Airport a : flightSystem.getAirportList())
             if (a.getName().equals(destiny))
                 return true;
         return false;
     }
 
-    public static boolean validateTime(String time){
+    public static boolean validateTime(String time) {
         String[] aux = time.split(":");
         Integer hour, min;
         try {
@@ -103,15 +101,22 @@ public class ValidateData {
         return true;
     }
 
-    public static boolean validateLineFile(String line, FlightSystem flightSystem){
+    public static boolean validateLineFile(String line, FlightSystem flightSystem) {
         //[aerolinea]#[nroVuelo]#[diasSemana]#[origen]#[destino]#[horaSalida]#[duracion]#[precio]
+        //[nombre]#[lat]#[lng]
         String aux[] = line.split("#");
-        if (aux.length != 8) return false;
-        boolean check = validateName(aux[0]) && validateFlightNumber(aux[1]);
-        boolean check2 = validateDay(aux[2]) && validateOrigin(aux[3], flightSystem);
-        boolean check3 = validateDestiny(aux[4], flightSystem) && validateTime(aux[5]);
-        boolean check4 = validateLong(aux[6]) && validatePrice(aux[7]);
-        return check && check2 && check3 && check4;
+        if (aux.length == 8) {
+            boolean check = validateName(aux[0]) && validateFlightNumber(aux[1]);
+            boolean check2 = validateDay(aux[2]) && validateOrigin(aux[3], flightSystem);
+            boolean check3 = validateDestiny(aux[4], flightSystem) && validateTime(aux[5]);
+            boolean check4 = validateLong(aux[6]) && validatePrice(aux[7]);
+
+            return check && check2 && check3 && check4;
+        } else if (aux.length == 3) {
+            return validateName(aux[0]) && validateLat(aux[1]) && validateLon(aux[2]);
+        } else {
+            return false;
+        }
     }
 
 }
