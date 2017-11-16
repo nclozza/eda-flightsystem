@@ -2,12 +2,11 @@ package Graph;
 
 import InputHandler.ConsoleReader;
 import InputHandler.ValidateData;
+import Outputs.KMLOutput;
+import Outputs.TextOutput;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -28,6 +27,9 @@ public class MainHandler {
    */
   public void runCode() {
     String input = null;
+    boolean textFile = false;
+    boolean KML = false;
+    String fileName = null;
 
     while (true) {
       System.out.println("Enter some text, or '" + EXIT_COMMAND + "' to quit");
@@ -219,29 +221,38 @@ public class MainHandler {
 
             Itinerary itinerary = flightSystem.setItinerary(origin, destination, daysList, aux[3]);
 
-            System.out.println(itinerary.getTotalPrice());
+            if (itinerary == null) {
+                System.out.println("Can't find an appropriate flight itinerary");
+
+            } else {
+                outputHandler(itinerary, textFile, fileName, KML);
+            }
+
           } else {
             System.out.println("Wrong input");
           }
           break;
+
         case "worldTrip":
           System.out.println(aux[0]);
           //Sintaxis: worldTrip [origen] [prioridad{ft|pr|tt}] [diasSemana]
           //Aca solo falta validar o ver como haces para validar lo de prioridad
           break;
-        case "exit":
+
+          case "exit":
           System.out.print("See you soon");
           return;
+
         case "outputFormat":
           if (aux.length != 3) {
             System.out.println("Wrong input");
           } else {
             switch (aux[1]) {
               case "text":
-                //Do something
+                KML = false;
                 break;
               case "KML":
-                //Do something
+                KML = true;
                 break;
               default:
                 System.out.println("Wrong input");
@@ -249,14 +260,13 @@ public class MainHandler {
             }
 
             switch (aux[2]) {
-              case "archivo":
-                //Do something
-                break;
-              case "stdout":
-                //Do something
-                break;
-              default:
-                System.out.println("Wrong input");
+                case "stdout":
+                    textFile = false;
+                    break;
+                default:
+                    textFile = true;
+                    fileName = aux[2];
+                    System.out.println("Output save in: " + aux[2]);
                 break;
             }
           }
@@ -286,7 +296,7 @@ public class MainHandler {
 
   private void addFlightsFromFile(LinkedList<String> flightsFromFile, boolean clear) {
     if (clear) {
-      flightSystem.deleteAllAirports();
+      flightSystem.deleteAllFlights();
     }
 
     for (String eachFlight : flightsFromFile) {
@@ -297,11 +307,11 @@ public class MainHandler {
       daysList.addAll(Arrays.asList(days));
 
       String departureHour[] = aux[5].split(":");
-      Time departureTime = new Time(Integer.parseInt(departureHour[0]), Integer.parseInt(departureHour[1]));
+      double departureTime = Double.parseDouble(departureHour[0]) + Double.parseDouble(departureHour[1]);
 
       String duration[] = aux[6].split("h");
       duration[1] = duration[1].replace("m", "");
-      Time durationTime = new Time(Integer.parseInt(duration[0]), Integer.parseInt(duration[1]));
+      double durationTime = Double.parseDouble(duration[0]) + Double.parseDouble(duration[1]);
 
       flightSystem.addFlight(aux[0], Integer.parseInt(aux[1]), daysList, aux[3], aux[4],
                                 departureTime, durationTime, Double.parseDouble(aux[7]));
@@ -312,7 +322,7 @@ public class MainHandler {
   private LinkedList<String> processingFile(String path) {
     try {
       String absolutePath = new File("").getAbsolutePath();
-      absolutePath += "/src/Data/" + path;
+      absolutePath += "/src/Data/Input/" + path;
       BufferedReader br = new BufferedReader(new FileReader(absolutePath));
       String line = br.readLine();
       LinkedList<String> ret = new LinkedList<>();
@@ -320,7 +330,6 @@ public class MainHandler {
         if (!ValidateData.validateLineFile(line, flightSystem)) {
           System.out.println("Wrong file format");
         }
-        //Here we should save this line somewhere
         ret.add(line);
         line = br.readLine();
       }
@@ -329,6 +338,42 @@ public class MainHandler {
       e.printStackTrace();
     }
     return null;
+  }
+
+  private void outputHandler(Itinerary itinerary, boolean textFile, String fileName, boolean KML) {
+      if (textFile) {
+          if (KML) {
+              KMLOutput kmlOutput = new KMLOutput();
+              LinkedList<Flight> flights = new LinkedList<>();
+
+              for (ItineraryFlightInfo each : itinerary.getFlights()) {
+                  flights.add(each.getFlight());
+              }
+
+              kmlOutput.createKML(flights, fileName);
+
+          } else {
+              String ret = "";
+              ret += "Precio#" + itinerary.getTotalPrice() + "\n";
+              ret += "TiempoVuelo#" + itinerary.getFlightTime().toString() + "\n";
+              ret += "TiempoTotal#" + itinerary.getTotalFlightTime().toString() + "\n\n";
+
+              for (ItineraryFlightInfo each : itinerary.getFlights()) {
+                  ret += each.getFlight().getOrigin().getName()+ "#"
+                      + each.getFlight().getAirline() + "#"
+                      + each.getFlight().getFlightNr() + "#"
+                      + each.getArrivalDay().getDayName() + "#"
+                      + each.getFlight().getDestination().getName() + "\n";
+              }
+
+              TextOutput textOutput = new TextOutput();
+              textOutput.createText(itinerary != null, ret, fileName);
+          }
+
+      } else {
+          System.out.println(itinerary);
+      }
+
   }
 
   public FlightSystem getFlightSystem() {
