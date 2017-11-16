@@ -7,7 +7,11 @@ public class Time {
     private double minutes;
 
     public Time(int hours, int minutes){
-        this.minutes= hours*60 + minutes;
+        this.minutes = (hours * 60) + minutes;
+    }
+
+    public Time(double totalMinutes) {
+        this.minutes = totalMinutes;
     }
 
     @Override
@@ -27,4 +31,8 @@ public class Time {
     public int getMinutes(){return ((int) minutes%60);}
 
     public double getAllMinutes(){return minutes;}
+
+    public Time addTime(Time t) {
+        return new Time(this.minutes + t.getAllMinutes());
+    }
 }
