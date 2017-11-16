@@ -48,7 +48,7 @@ public class MainHandler {
                 else {
                   ValidateData.validateName(aux[2]); //aux[2] is name
                   ValidateData.validateLat(aux[3]); //aux[3] is lat
-                  ValidateData.validateLon(aux[4]); //aux[4] is long
+                  ValidateData.validateLng(aux[4]); //aux[4] is long
 
                   Integer lat = Integer.parseInt(aux[3]);
                   Integer lon = Integer.parseInt(aux[4]);
@@ -87,8 +87,8 @@ public class MainHandler {
                 else {
                   boolean state1 = ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]);
                   boolean state2 = ValidateData.validateDay(aux[4]) && ValidateData.validateOrigin(aux[5], flightSystem);
-                  boolean state3 = ValidateData.validateDestiny(aux[6], flightSystem) && ValidateData.validateTime(aux[7]);
-                  boolean state4 = ValidateData.validateLong(aux[8]) && ValidateData.validatePrice(aux[9]);
+                  boolean state3 = ValidateData.validateDestiny(aux[6], flightSystem) && ValidateData.validateDepartureTime(aux[7]);
+                  boolean state4 = ValidateData.validateFlightDuration(aux[8]) && ValidateData.validatePrice(aux[9]);
 
                   if (!(state1 && state2 && state3 && state4))
                     System.out.println("Wrong input");

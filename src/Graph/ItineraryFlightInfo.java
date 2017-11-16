@@ -26,7 +26,7 @@ public class ItineraryFlightInfo {
         this.arrivalTime = calculateArrivalTime(this);
     }
 
-    ItineraryFlightInfo(Flight flight){
+    public ItineraryFlightInfo(Flight flight){
         this.flight = flight;
         this.departureDay = null;
         this.departureTime = flight.getDepartureTime();
