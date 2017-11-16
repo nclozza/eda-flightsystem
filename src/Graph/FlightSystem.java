@@ -89,49 +89,31 @@ public class FlightSystem {
         }
     }
 
-    private class PriceComparator<T> implements Comparator<T> {
+    private class PriceComparator implements Comparator<PQAirport> {
         @Override
-        public int compare(T o1, T o2) {
-            double price1, price2;
+        public int compare(PQAirport o1, PQAirport o2) {
+            double price1 = o1.getPrice(), price2 = o2.getPrice();
+            double priceDifference = price1 - price2;
 
-            if (o1 instanceof Flight && o2 instanceof Flight) {
-                price1 = ((Flight)o1).getPrice();
-                price2 = ((Flight)o2).getPrice();
-
-            } else if (o1 instanceof PQAirport && o2 instanceof PQAirport) {
-                price1 = ((PQAirport)o1).getPrice();
-                price2 = ((PQAirport)o2).getPrice();
-
-            } else {
-                throw new IllegalArgumentException("Wrong classes");
+            if (priceDifference < 1 && priceDifference > -1) {
+                return 0;
             }
 
-            return (int) (price1 - price2);
+            return (int)priceDifference;
         }
     }
 
-    private class TimeComparator<T> implements Comparator<T> {
+    private class TimeComparator implements Comparator<PQAirport> {
         @Override
-        public int compare(T o1, T o2) {
-            double minutes1 = 0, minutes2 = 0;
+        public int compare(PQAirport o1, PQAirport o2) {
+            double minutes1 = o1.getTime().getAllMinutes(), minutes2 = o2.getTime().getAllMinutes();
+            double timeDifference = minutes1 - minutes2;
 
-            if (o1 instanceof Flight && o2 instanceof Flight) {
-                minutes1 = ((Flight)o1).getDepartureTime().getAllMinutes();
-                minutes2 = ((Flight)o2).getDepartureTime().getAllMinutes();
-            } else if (o1 instanceof PQAirport && o2 instanceof PQAirport) {
-                minutes1 = ((PQAirport)o1).getTime().getAllMinutes();
-                minutes2 = ((PQAirport)o2).getTime().getAllMinutes();
-            } else {
-                // Throw Exception porque no es la clase correcta
-            }
-
-            if (minutes1 > minutes2) {
-                return 1;
-            } else if (minutes1 < minutes2) {
-                return -1;
-            } else {
+            if (timeDifference < 1 && timeDifference > -1) {
                 return 0;
             }
+
+            return (int)timeDifference;
         }
     }
 
@@ -194,8 +176,8 @@ public class FlightSystem {
         }
     }
 
-    public PQAirport minPath(Airport origin, Airport destination, List<String> days, Comparator<PQAirport> pqComparator,
-                             Comparator<Flight> flightComparator) {
+    public PQAirport minPath(Airport origin, Airport destination, List<String> days,
+                             Comparator<PQAirport> pqComparator) {
 
         clearMarks();
 
@@ -280,7 +262,7 @@ public class FlightSystem {
 
     Itinerary setItinerary(String origin, String destination, List<String> days, String priority) {
         if (!(airportHashMap.containsKey(origin) && airportHashMap.containsKey(destination))) {
-            throw new IllegalArgumentException("Wrong Airports");
+            throw new IllegalArgumentException("Wrong airports.\n");
         }
 
         Airport originAirport = airportHashMap.get(origin);
@@ -289,11 +271,11 @@ public class FlightSystem {
         PQAirport node;
         switch (priority) {
             case "pr":
-                node = minPath(originAirport, destinationAirport, days, new PriceComparator<>(), new PriceComparator<>());
+                node = minPath(originAirport, destinationAirport, days, new PriceComparator());
                 break;
 
             case "ft":
-                node = minPath(originAirport, destinationAirport, days, new TimeComparator<>(), new TimeComparator<>());
+                node = minPath(originAirport, destinationAirport, days, new TimeComparator());
                 break;
 
             default:
