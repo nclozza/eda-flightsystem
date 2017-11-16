@@ -58,13 +58,13 @@ public class FlightSystem {
     }
 
     void addFlight(String airline, int flightNr, List<String> flightDays, String origin, String destination,
-                   Time departureTime, Time duration, double price) {
+                   double departureTime, double duration, double price) {
         if (!(airportHashMap.containsKey(origin) && airportHashMap.containsKey(destination))) {
             throw new IllegalArgumentException("Wrong airports for that flight.\n");
         }
 
         Flight flight = new Flight(airline, flightNr, flightDays, airportHashMap.get(origin),
-                                    airportHashMap.get(destination), departureTime, duration, price);
+                                    airportHashMap.get(destination), new Time(departureTime), new Time(duration), price);
 
         airportHashMap.get(origin).addFlight(flight);
     }
@@ -174,9 +174,11 @@ public class FlightSystem {
 
         boolean worldTrip = origin.equals(destination);
 
+        /*
         if (worldTrip && !existsHamiltonianCycle()) {
             return null;
         }
+        */
 
         /**
          * Modified Djikstra that only queues flights which depart on one of the given days
@@ -188,7 +190,11 @@ public class FlightSystem {
             for (Flight eachFlight : origin.getFlights()) {
                 for (String eachFlightDay : eachFlight.getFlightDays()) {
                     if (eachDay.equals(eachFlightDay)) {
-                        priorityQueue.offer(new PQAirport(eachFlight.getDestination(), eachFlight, eachFlightDay));
+                        PQAirport pqAirport = new PQAirport(eachFlight.getDestination(), eachFlight, eachFlightDay);
+                        if (worldTrip) {
+                            pqAirport.visitedAirports.remove(origin);
+                        }
+                        priorityQueue.offer(pqAirport);
                     }
 
                 }
@@ -277,65 +283,5 @@ public class FlightSystem {
         }
 
         return new Itinerary(node.price, node.totalTime, node.flightTime, node.itineraryFlightInfoList);
-    }
-
-    public static void main(String[] args) {
-        MainHandler mainHandler = new MainHandler();
-
-        Time departure = new Time(0,100);
-        Time duration = new Time(0,200);
-
-        Time duration2 = new Time(700);
-
-        List<String> days1 = new ArrayList<>();
-        days1.add("Lu");
-
-        List<String> days7 = new ArrayList<>();
-        days7.add("Lu");
-        days7.add("Ma");
-
-        List<String> days2 = new ArrayList<>();
-        days2.add("Mi");
-
-        List<String> days3 = new ArrayList<>();
-        days3.add("Mi");
-
-        List<String> days4 = new ArrayList<>();
-        days4.add("Ju");
-
-        List<String> days5 = new ArrayList<>();
-        days5.add("Vi");
-
-        List<String> days6 = new ArrayList<>();
-        days6.add("Lu");
-        days6.add("Ju");
-
-        FlightSystem f = mainHandler.getFlightSystem();
-
-        f.addAirport("BUE",0,1);
-        f.addAirport("PAR",2,3);
-        f.addAirport("LON",2,3);
-        f.addAirport("MOS",2,3);
-
-        f.addFlight("AA",1234, days1, "BUE", "PAR", departure, duration, 100);
-        f.addFlight("AF",6786, days2, "PAR", "LON", departure, duration, 200);
-        f.addFlight("BA",7896, days3, "LON", "MOS", departure, duration, 500);
-        f.addFlight("AM",2324, days4, "BUE", "MOS", departure, duration2,600);
-        f.addFlight("BB",2154, days1, "BUE", "LON", departure, duration2, 200);
-
-        /**
-         * Cuando la prioridad es "pr" entonces devuelve el vuelo directo entre BUE y MOS
-         * Si la prioridad es "ft" entonces devuelve BUE - PAR - LON - MOS
-         */
-        Itinerary it = f.setItinerary("BUE", "LON", days1, "tt");
-
-        System.out.println(it.getTotalPrice());
-        System.out.println(it.getFlightTime());
-        System.out.println(it.getTotalFlightTime());
-
-        for (ItineraryFlightInfo flight : it.getFlights()) {
-            System.out.println(flight.getFlight().getOrigin().getName());
-            System.out.println(flight.getFlight().getDestination().getName());
-        }
     }
 }

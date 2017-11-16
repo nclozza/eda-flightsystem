@@ -40,4 +40,22 @@ public class Itinerary {
         return flights;
     }
 
+    @Override
+    public String toString() {
+        String ret = "From - To - Day - Departure - Duration - Price\n";
+        for (ItineraryFlightInfo each : flights) {
+            ret += each.getFlight().getOrigin().getName() + " - "
+                + each.getFlight().getDestination().getName() + " - "
+                + each.getDepartureDay().getDayName() + " - "
+                + each.getDepartureTime() + " - "
+                + each.getFlight().getDuration() + " - "
+                + each.getFlight().getPrice() + "\n";
+        }
+        ret += "\n";
+        ret += "Total Price: " + totalPrice + "\n";
+        ret += "Flight Time: " + flightTime + "\n";
+        ret += "Total Flight Time: " + totalFlightTime + "\n";
+
+        return ret;
+    }
 }
