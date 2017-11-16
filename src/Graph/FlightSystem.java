@@ -92,25 +92,21 @@ public class FlightSystem {
     private class PriceComparator<T> implements Comparator<T> {
         @Override
         public int compare(T o1, T o2) {
-            double price1 = 0, price2 = 0;
+            double price1, price2;
 
             if (o1 instanceof Flight && o2 instanceof Flight) {
                 price1 = ((Flight)o1).getPrice();
                 price2 = ((Flight)o2).getPrice();
+
             } else if (o1 instanceof PQAirport && o2 instanceof PQAirport) {
                 price1 = ((PQAirport)o1).getPrice();
                 price2 = ((PQAirport)o2).getPrice();
+
             } else {
-                // Throw Exception porque no es la clase correcta
+                throw new IllegalArgumentException("Wrong classes");
             }
 
-            if (price1 > price2) {
-                return 1;
-            } else if (price1 < price2) {
-                return -1;
-            } else {
-                return 0;
-            }
+            return (int) (price1 - price2);
         }
     }
 
@@ -141,24 +137,35 @@ public class FlightSystem {
 
     private class PQAirport {
         private Airport airport;
-        private Flight previousFlight; //flight del que vino al aeropuerto
-        private PQAirport previousAirport;
         private double price;
-        private Time time;
+        private Time flightTime;
+        private Time totalTime;
+        private LinkedList<ItineraryFlightInfo> itineraryFlightInfoList;
+        private HashSet<Airport> visitedAirports;
 
-
-        public PQAirport(Airport airport, double price, Flight previousFlight, PQAirport previousAirport) {
+        public PQAirport(Airport airport, Flight flight, String day) {
             this.airport = airport;
-            this.price = price;
-            this.previousFlight = previousFlight;
-            this.previousAirport = previousAirport;
+            price = flight.getPrice();
+            flightTime = new Time(flight.getDuration().getAllMinutes());
+            totalTime = new Time(flight.getDuration().getAllMinutes());
+            itineraryFlightInfoList = new LinkedList<>();
+            itineraryFlightInfoList.add(new ItineraryFlightInfo(flight, new Day(day)));
+            visitedAirports = new HashSet<>();
+            visitedAirports.add(airport);
+            visitedAirports.add(flight.getOrigin());
         }
 
-        public PQAirport(Airport airport, Time time, Flight previousFlight, PQAirport previousAirport) {
+
+        public PQAirport(Airport airport, Flight previousFlight, PQAirport previousPQAirport, String day) {
             this.airport = airport;
-            this.time = time;
-            this.previousFlight = previousFlight;
-            this.previousAirport = previousAirport;
+            price = previousFlight.getPrice() + previousPQAirport.price;
+            flightTime = new Time(previousPQAirport.flightTime.getAllMinutes() + previousFlight.getDuration().getAllMinutes());
+            totalTime = new Time(previousPQAirport.totalTime.getAllMinutes() + previousFlight.getDuration().getAllMinutes() +
+                                calculateWaitingTime(previousPQAirport.itineraryFlightInfoList.getLast(), new Day(day), previousFlight));
+            itineraryFlightInfoList = (LinkedList<ItineraryFlightInfo>) previousPQAirport.itineraryFlightInfoList.clone();
+            itineraryFlightInfoList.add(new ItineraryFlightInfo(previousFlight, new Day(day)));
+            visitedAirports = (HashSet<Airport>) previousPQAirport.visitedAirports.clone();
+            visitedAirports.add(airport);
         }
 
         double getPrice() {
@@ -166,110 +173,103 @@ public class FlightSystem {
         }
 
         Time getTime() {
-            return time;
+            return flightTime;
         }
 
-        Airport getAirport() {
-            return airport;
+        private double calculateWaitingTime(ItineraryFlightInfo itineraryFlightInfo, Day day, Flight flight) {
+            int daysBetween = 0;
+            double totalMinutesInOneDay = 24 * 60;
+
+            if (itineraryFlightInfo.getArrivalDay().getDayNumber() < day.getDayNumber()) {
+                daysBetween = day.getDayNumber() - itineraryFlightInfo.getArrivalDay().getDayNumber();
+            } else if (itineraryFlightInfo.getArrivalDay().getDayNumber() > day.getDayNumber()) {
+                daysBetween = 7 - itineraryFlightInfo.getArrivalDay().getDayNumber() + day.getDayNumber();
+            } else if (itineraryFlightInfo.getArrivalTime().getAllMinutes() > flight.getDepartureTime().getAllMinutes()) {
+                daysBetween = 7;
+            }
+
+            return daysBetween * totalMinutesInOneDay +
+                (totalMinutesInOneDay - itineraryFlightInfo.getArrivalTime().getAllMinutes()) +
+                flight.getDepartureTime().getAllMinutes();
         }
+    }
 
-        public PQAirport minPath(Airport destination, List<String> days, Comparator<PQAirport> pqComparator,
-                                 Comparator<Flight> flightComparator) {
-            if (this.getAirport() == null || destination == null) {
-                System.out.println("Origin or destination not specified.\n");
-                return null;
-            }
+    public PQAirport minPath(Airport origin, Airport destination, List<String> days, Comparator<PQAirport> pqComparator,
+                             Comparator<Flight> flightComparator) {
 
-            clearMarks();
+        clearMarks();
 
-            if ((airport == destination) && !existsHamiltonianCycle()) {
-                return null;
-            }
+        boolean worldTrip = origin.equals(destination);
 
-            /**
-             * Modified Djikstra that only queues flights which depart on one of the given days
-             */
-
-            PriorityQueue<PQAirport> priorityQueue = new PriorityQueue<>(pqComparator);
-            List<Flight> originFlights = new ArrayList<>();
-            originFlights.addAll(airport.getFlights());
-            originFlights.sort(flightComparator);
-
-            for (String day : days) {
-                int i = 0;
-
-                while (!originFlights.get(i).getFlightDays().contains(day)) {
-                    i++;
-                }
-
-                if (i < originFlights.size()) {
-                    if (pqComparator instanceof PriceComparator) {
-                        priorityQueue.offer(new PQAirport(originFlights.get(i).getDestination(),
-                                originFlights.get(i).getPrice(), originFlights.get(i), this));
-                    } else if (pqComparator instanceof TimeComparator) {
-                        priorityQueue.offer(new PQAirport(originFlights.get(i).getDestination(),
-                                originFlights.get(i).getDepartureTime(), originFlights.get(i), this));
-                    }
-                }
-            }
-
-            Set<Airport> visited = new HashSet<>();
-
-            //this.getAirport().visited = true;
-            visited.add(airport);
-
-            /**
-             * Dijkstra's algorithm starting from the second step with price priority
-             */
-
-            while (!priorityQueue.isEmpty()) {
-                PQAirport currentPQAirport = priorityQueue.poll();
-
-                if (currentPQAirport.getAirport() == destination) {
-                    if (visited.size() == airportList.size()) {
-                        return currentPQAirport;
-                    }
-                } else if (!currentPQAirport.getAirport().visited) {
-                    // currentPQAirport.getAirport().visited = true;
-                    visited.add(currentPQAirport.getAirport());
-
-                    for (Flight f : currentPQAirport.getAirport().getFlights()) {
-                        Airport nextAirport = f.getDestination();
-
-                        if (!visited.contains(nextAirport)) {
-                            if (pqComparator instanceof PriceComparator) {
-                                double priceSum = currentPQAirport.getPrice() + f.getPrice();
-
-                                priorityQueue.offer(new PQAirport(nextAirport, priceSum, f, currentPQAirport));
-                            } else if (pqComparator instanceof TimeComparator) {
-                                Time timeSum = currentPQAirport.getTime().addTime(f.getDepartureTime());
-
-                                priorityQueue.offer(new PQAirport(nextAirport, timeSum, f, currentPQAirport));
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Our queue has been emptied and we haven't found our minimum valued path.
+        if (worldTrip && !existsHamiltonianCycle()) {
             return null;
         }
 
-        private boolean existsHamiltonianCycle() {
-            int minCycleVertices = 3;   // Minimum amount of vertices needed for a possible cycle existence in the graph.
+        /**
+         * Modified Djikstra that only queues flights which depart on one of the given days
+         */
 
-            if (airportList.size() >= minCycleVertices) {
-                for (Airport ap : airportList) {
-                    if (ap.getFlights().size() < (airportList.size() / 2)) {
-                        return false;
+        PriorityQueue<PQAirport> priorityQueue = new PriorityQueue<>(pqComparator);
+
+        for (String eachDay : days) {
+            for (Flight eachFlight : origin.getFlights()) {
+                for (String eachFlightDay : eachFlight.getFlightDays()) {
+                    if (eachDay.equals(eachFlightDay)) {
+                        priorityQueue.offer(new PQAirport(eachFlight.getDestination(), eachFlight, eachFlightDay));
                     }
+
                 }
-            } else {
-                return false;
+            }
+        }
+
+        /**
+         * Dijkstra's algorithm starting from the second step with price priority
+         */
+
+        PQAirport currentPQAirport;
+
+        while (!priorityQueue.isEmpty()) {
+            currentPQAirport = priorityQueue.poll();
+
+            if (currentPQAirport.airport.equals(destination)) {
+                if (worldTrip) {
+                    if (currentPQAirport.visitedAirports.size() == airportList.size()) {
+                        return currentPQAirport;
+                    }
+                } else {
+                    return currentPQAirport;
+                }
             }
 
-            return true;
+            for (Flight eachFlight : currentPQAirport.airport.getFlights()) {
+                if (!currentPQAirport.visitedAirports.contains(eachFlight.getDestination())) {
+                    for (String eachDay : eachFlight.getFlightDays()) {
+                        priorityQueue.offer(new PQAirport(eachFlight.getDestination(), eachFlight,
+                            currentPQAirport, eachDay)); //Checkear
+                    }
+                }
+            }
+
         }
+
+        // Our queue has been emptied and we haven't found our minimum valued path.
+        return null;
+    }
+
+    private boolean existsHamiltonianCycle() {
+        int minCycleVertices = 3;   // Minimum amount of vertices needed for a possible cycle existence in the graph.
+
+        if (airportList.size() >= minCycleVertices) {
+            for (Airport ap : airportList) {
+                if (ap.getFlights().size() < (airportList.size() / 2)) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -279,79 +279,90 @@ public class FlightSystem {
      */
 
     Itinerary setItinerary(Airport origin, Airport destination, List<String> days, String priority) {
+        if (!(airportHashMap.containsKey(origin.getName()) && airportHashMap.containsKey(destination.getName()))) {
+            throw new IllegalArgumentException("Wrong Airports");
+        }
 
-        PQAirport originPQ = new PQAirport(origin, 0, null,  null);
         PQAirport node;
-
         switch (priority) {
             case "pr":
-                node = originPQ.minPath(destination, days, new PriceComparator<>(), new PriceComparator<>());
+                node = minPath(origin, destination, days, new PriceComparator<>(), new PriceComparator<>());
                 break;
 
             case "ft":
-                node = originPQ.minPath(destination, days, new TimeComparator<>(), new TimeComparator<>());
+                node = minPath(origin, destination, days, new TimeComparator<>(), new TimeComparator<>());
                 break;
 
             default:
                 return null;
         }
 
-        double price = node.getPrice();
-
-        Time cummulativeFlightTime = new Time(0,0); //time without waiting between planes
-        Time cummulativeTotalFlightTime = new Time(0,0); //time with wait between planes
-
-        ArrayList<ItineraryFlightInfo> flights = new ArrayList<>();
-        recursivePath(node, flights); //metemos la lista de flights en flights
-        Collections.reverse(flights); //queremos la lista desde origin hasta destination y no al reves
-
-
-        int i = 0;
-        while(!flights.get(0).getFlight().getFlightDays().contains(days.get(i)))
-            i++;
-        //elijo arbitrariamente el primer dia de despegue para el primer vuelo
-
-        flights.get(0).setDepartureDay(new Day(days.get(i)));
-        cummulativeFlightTime.setMinutes(cummulativeFlightTime.getAllMinutes() +
-                flights.get(0).getFlight().getDuration().getAllMinutes());
-        //adds the duration of the first flight to the cummulative flight time
-
-        cummulativeTotalFlightTime.setMinutes(cummulativeTotalFlightTime.getAllMinutes() +
-                flights.get(0).getFlight().getDuration().getAllMinutes());
-        //adds the duration of the first flight to the cummulative total flight time
-
-
-        for(int j=1; j < flights.size(); j++){
-            //adds the duration of the flight to the cummulative flight time
-           cummulativeFlightTime.setMinutes(flights.get(j).getFlight().getDuration().getAllMinutes() +
-                   cummulativeFlightTime.getAllMinutes());
-
-            //ARBITRARILY choose the day the flight will depart
-            flights.get(j).setDepartureDay(new Day (flights.get(j).getFlight().getFlightDays().get(0)));
-            //Day and time the user arrived at the airport from the last flight
-            Day arrivalDay = flights.get(j-1).getArrivalDay();
-            Time arrivalTime = flights.get(j-1).getArrivalTime();
-
-            double waitingMinutes = (flights.get(j).getDepartureDay().getDayNumber()* ItineraryFlightInfo.HOURS* ItineraryFlightInfo.MINUTES
-                    + flights.get(j).getDepartureTime().getAllMinutes()) -
-                    ((arrivalDay.getDayNumber()* ItineraryFlightInfo.HOURS* ItineraryFlightInfo.MINUTES + arrivalTime.getAllMinutes()));
-
-            if (waitingMinutes < 0 ){
-                waitingMinutes += ItineraryFlightInfo.WEEKDAYS* ItineraryFlightInfo.HOURS* ItineraryFlightInfo.MINUTES;
-            }
-
-            cummulativeTotalFlightTime.setMinutes(flights.get(j).getFlight().getDuration().getAllMinutes() +
-                    waitingMinutes);
-           }
-
-        return new Itinerary(price, cummulativeTotalFlightTime, cummulativeFlightTime, flights);
+        return new Itinerary(node.price, node.totalTime, node.flightTime, node.itineraryFlightInfoList);
     }
 
-    private void recursivePath(PQAirport node, ArrayList<ItineraryFlightInfo> flights){
-        if(node == null || node.previousFlight == null)
-            return;
+    public static void main(String[] args) {
+        MainHandler mainHandler = new MainHandler();
 
-        flights.add(new ItineraryFlightInfo(node.previousFlight));
-        recursivePath(node.previousAirport, flights);
+        Time departure = new Time(0,100);
+        Time duration = new Time(0,200);
+
+        Time duration2 = new Time(700);
+
+        Airport bue = new Airport("BUE",0,1);
+        Airport par = new Airport("PAR",2,3);
+        Airport lon = new Airport("LON",2,3);
+        Airport mos = new Airport("MOS",2,3);
+
+        List<String> days1 = new ArrayList<>();
+        days1.add("Lu");
+
+        List<String> days2 = new ArrayList<>();
+        days2.add("Mi");
+
+        List<String> days3 = new ArrayList<>();
+        days3.add("Mi");
+
+        List<String> days4 = new ArrayList<>();
+        days4.add("Ju");
+
+        List<String> days5 = new ArrayList<>();
+        days5.add("Vi");
+
+        List<String> days6 = new ArrayList<>();
+        days6.add("Lu");
+        days6.add("Ju");
+
+        Flight flight1 = new Flight("AA",1234, days1, bue, par, departure, duration, 100);
+        Flight flight2 = new Flight("AF",6786, days2, par, lon, departure, duration, 200);
+        Flight flight3 = new Flight("BA",7896, days3, lon, mos, departure, duration, 500);
+        Flight flight4 = new Flight("AM",2324, days4, bue, mos, departure, duration2, 600);
+
+
+        FlightSystem f = mainHandler.getFlightSystem();
+
+        f.addAirport(bue);
+        f.addAirport(par);
+        f.addAirport(lon);
+        f.addAirport(mos);
+
+        f.getAirportList().get(0).addFlight(flight1);
+        f.getAirportList().get(1).addFlight(flight2);
+        f.getAirportList().get(2).addFlight(flight3);
+        f.getAirportList().get(0).addFlight(flight4);
+
+        /**
+         * Cuando la prioridad es "pr" entonces devuelve el vuelo directo entre BUE y MOS
+         * Si la prioridad es "ft" entonces devuelve BUE - PAR - LON - MOS
+         */
+        Itinerary it = f.setItinerary(bue, mos, days6, "ft");
+
+        System.out.println(it.getTotalPrice());
+        System.out.println(it.getFlightTime());
+        System.out.println(it.getTotalFlightTime());
+
+        for (ItineraryFlightInfo flight : it.getFlights()) {
+            System.out.println(flight.getFlight().getOrigin().getName());
+            System.out.println(flight.getFlight().getDestination().getName());
+        }
     }
 }
