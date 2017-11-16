@@ -23,11 +23,6 @@ public class FlightSystem {
         airportHashMap.put(name, a);
     }
 
-    public void addAirport(Airport airport) {
-        airportList.add(airport);
-        airportHashMap.put(airport.getName(), airport);
-    }
-
     boolean deleteAirport(String airportName) {
         if (airportHashMap.containsKey(airportName)) {
             airportHashMap.remove(airportName);
@@ -62,15 +57,6 @@ public class FlightSystem {
         return airportList;
     }
 
-    public void addFlight(Flight flight) {
-        if (!(airportHashMap.containsKey(flight.getOrigin().getName())
-                && airportHashMap.containsKey(flight.getDestination().getName()))) {
-            throw new IllegalArgumentException("Wrong airports for that flight.\n");
-        }
-
-        airportHashMap.get(flight.getOrigin().getName()).addFlight(flight);
-    }
-
     void addFlight(String airline, int flightNr, List<String> flightDays, String origin, String destination,
                    Time departureTime, Time duration, double price) {
         if (!(airportHashMap.containsKey(origin) && airportHashMap.containsKey(destination))) {
@@ -91,29 +77,31 @@ public class FlightSystem {
 
     private class PriceComparator implements Comparator<PQAirport> {
         @Override
-        public int compare(PQAirport o1, PQAirport o2) {
-            double price1 = o1.getPrice(), price2 = o2.getPrice();
-            double priceDifference = price1 - price2;
+        public int compare(PQAirport pqAirport1, PQAirport pqAirport2) {
+            double price1 = pqAirport1.getPrice();
+            double price2 = pqAirport2.getPrice();
 
-            if (priceDifference < 1 && priceDifference > -1) {
-                return 0;
-            }
-
-            return (int)priceDifference;
+            return (int) (price1 - price2);
         }
     }
 
     private class TimeComparator implements Comparator<PQAirport> {
         @Override
-        public int compare(PQAirport o1, PQAirport o2) {
-            double minutes1 = o1.getTime().getAllMinutes(), minutes2 = o2.getTime().getAllMinutes();
-            double timeDifference = minutes1 - minutes2;
+        public int compare(PQAirport pqAirport1, PQAirport pqAirport2) {
+            double minutes1 = pqAirport1.getTime().getAllMinutes();
+            double minutes2 = pqAirport2.getTime().getAllMinutes();
 
-            if (timeDifference < 1 && timeDifference > -1) {
-                return 0;
-            }
+            return (int) (minutes1 - minutes2);
+        }
+    }
 
-            return (int)timeDifference;
+    private class TotalTimeComparator implements Comparator<PQAirport> {
+        @Override
+        public int compare(PQAirport pqAirport1, PQAirport pqAirport2) {
+            double totalMinutes1 = pqAirport1.getTotalTime().getAllMinutes();
+            double totalMinutes2 = pqAirport2.getTotalTime().getAllMinutes();
+
+            return (int) (totalMinutes1 - totalMinutes2);
         }
     }
 
@@ -158,6 +146,10 @@ public class FlightSystem {
             return flightTime;
         }
 
+        Time getTotalTime() {
+            return totalTime;
+        }
+
         private double calculateWaitingTime(ItineraryFlightInfo itineraryFlightInfo, Day day, Flight flight) {
             int daysBetween = 0;
             double totalMinutesInOneDay = 24 * 60;
@@ -176,8 +168,7 @@ public class FlightSystem {
         }
     }
 
-    public PQAirport minPath(Airport origin, Airport destination, List<String> days,
-                             Comparator<PQAirport> pqComparator) {
+    public PQAirport minPath(Airport origin, Airport destination, List<String> days, Comparator<PQAirport> pqComparator) {
 
         clearMarks();
 
@@ -226,8 +217,7 @@ public class FlightSystem {
             for (Flight eachFlight : currentPQAirport.airport.getFlights()) {
                 if (!currentPQAirport.visitedAirports.contains(eachFlight.getDestination())) {
                     for (String eachDay : eachFlight.getFlightDays()) {
-                        priorityQueue.offer(new PQAirport(eachFlight.getDestination(), eachFlight,
-                            currentPQAirport, eachDay)); //Checkear
+                        priorityQueue.offer(new PQAirport(eachFlight.getDestination(), eachFlight, currentPQAirport, eachDay));
                     }
                 }
             }
@@ -262,7 +252,7 @@ public class FlightSystem {
 
     Itinerary setItinerary(String origin, String destination, List<String> days, String priority) {
         if (!(airportHashMap.containsKey(origin) && airportHashMap.containsKey(destination))) {
-            throw new IllegalArgumentException("Wrong airports.\n");
+            throw new IllegalArgumentException("Wrong Airports");
         }
 
         Airport originAirport = airportHashMap.get(origin);
@@ -276,6 +266,10 @@ public class FlightSystem {
 
             case "ft":
                 node = minPath(originAirport, destinationAirport, days, new TimeComparator());
+                break;
+
+            case "tt":
+                node = minPath(originAirport, destinationAirport, days, new TotalTimeComparator());
                 break;
 
             default:
@@ -293,13 +287,12 @@ public class FlightSystem {
 
         Time duration2 = new Time(700);
 
-        Airport bue = new Airport("BUE",0,1);
-        Airport par = new Airport("PAR",2,3);
-        Airport lon = new Airport("LON",2,3);
-        Airport mos = new Airport("MOS",2,3);
-
         List<String> days1 = new ArrayList<>();
         days1.add("Lu");
+
+        List<String> days7 = new ArrayList<>();
+        days7.add("Lu");
+        days7.add("Ma");
 
         List<String> days2 = new ArrayList<>();
         days2.add("Mi");
@@ -317,33 +310,28 @@ public class FlightSystem {
         days6.add("Lu");
         days6.add("Ju");
 
-        Flight flight1 = new Flight("AA",1234, days1, bue, par, departure, duration, 100);
-        Flight flight2 = new Flight("AF",6786, days2, par, lon, departure, duration, 200);
-        Flight flight3 = new Flight("BA",7896, days3, lon, mos, departure, duration, 500);
-        Flight flight4 = new Flight("AM",2324, days4, bue, mos, departure, duration2, 600);
-
-
         FlightSystem f = mainHandler.getFlightSystem();
 
-        f.addAirport(bue);
-        f.addAirport(par);
-        f.addAirport(lon);
-        f.addAirport(mos);
+        f.addAirport("BUE",0,1);
+        f.addAirport("PAR",2,3);
+        f.addAirport("LON",2,3);
+        f.addAirport("MOS",2,3);
 
-        f.getAirportList().get(0).addFlight(flight1);
-        f.getAirportList().get(1).addFlight(flight2);
-        f.getAirportList().get(2).addFlight(flight3);
-        f.getAirportList().get(0).addFlight(flight4);
+        f.addFlight("AA",1234, days1, "BUE", "PAR", departure, duration, 100);
+        f.addFlight("AF",6786, days2, "PAR", "LON", departure, duration, 200);
+        f.addFlight("BA",7896, days3, "LON", "MOS", departure, duration, 500);
+        f.addFlight("AM",2324, days4, "BUE", "MOS", departure, duration2,600);
+        f.addFlight("BB",2154, days1, "BUE", "LON", departure, duration2, 200);
 
         /**
          * Cuando la prioridad es "pr" entonces devuelve el vuelo directo entre BUE y MOS
          * Si la prioridad es "ft" entonces devuelve BUE - PAR - LON - MOS
          */
-        Itinerary it = f.setItinerary("BUE", "MOS", days6, "ft");
+        Itinerary it = f.setItinerary("BUE", "LON", days1, "tt");
 
         System.out.println(it.getTotalPrice());
         System.out.println(it.getFlightTime());
-        System.out.println(it.getTotalFlightTime().getAllMinutes());
+        System.out.println(it.getTotalFlightTime());
 
         for (ItineraryFlightInfo flight : it.getFlights()) {
             System.out.println(flight.getFlight().getOrigin().getName());
