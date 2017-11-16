@@ -278,19 +278,22 @@ public class FlightSystem {
      * The implementation is the same for pr and ft, the only thing that changes is the comparator
      */
 
-    Itinerary setItinerary(Airport origin, Airport destination, List<String> days, String priority) {
-        if (!(airportHashMap.containsKey(origin.getName()) && airportHashMap.containsKey(destination.getName()))) {
+    Itinerary setItinerary(String origin, String destination, List<String> days, String priority) {
+        if (!(airportHashMap.containsKey(origin) && airportHashMap.containsKey(destination))) {
             throw new IllegalArgumentException("Wrong Airports");
         }
+
+        Airport originAirport = airportHashMap.get(origin);
+        Airport destinationAirport = airportHashMap.get(destination);
 
         PQAirport node;
         switch (priority) {
             case "pr":
-                node = minPath(origin, destination, days, new PriceComparator<>(), new PriceComparator<>());
+                node = minPath(originAirport, destinationAirport, days, new PriceComparator<>(), new PriceComparator<>());
                 break;
 
             case "ft":
-                node = minPath(origin, destination, days, new TimeComparator<>(), new TimeComparator<>());
+                node = minPath(originAirport, destinationAirport, days, new TimeComparator<>(), new TimeComparator<>());
                 break;
 
             default:
@@ -354,11 +357,11 @@ public class FlightSystem {
          * Cuando la prioridad es "pr" entonces devuelve el vuelo directo entre BUE y MOS
          * Si la prioridad es "ft" entonces devuelve BUE - PAR - LON - MOS
          */
-        Itinerary it = f.setItinerary(bue, mos, days6, "ft");
+        Itinerary it = f.setItinerary("BUE", "MOS", days6, "ft");
 
         System.out.println(it.getTotalPrice());
         System.out.println(it.getFlightTime());
-        System.out.println(it.getTotalFlightTime());
+        System.out.println(it.getTotalFlightTime().getAllMinutes());
 
         for (ItineraryFlightInfo flight : it.getFlights()) {
             System.out.println(flight.getFlight().getOrigin().getName());

@@ -211,8 +211,8 @@ public class MainHandler {
                     && (aux[3].equals("ft") || aux[3].equals("pr") || aux[3].equals("tt"))
                       && ValidateData.validateDay(aux[4]) /*days*/) {
 
-            Airport origin = flightSystem.getAirport(aux[1]);
-            Airport destination = flightSystem.getAirport(aux[2]);
+            String origin = aux[1];
+            String destination = aux[2];
             String days[] = aux[4].split("-");
             LinkedList<String> daysList = new LinkedList<>();
             daysList.addAll(Arrays.asList(days));
