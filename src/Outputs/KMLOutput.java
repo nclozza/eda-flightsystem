@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 public class KMLOutput {
-    public void createKML(List<Flight> flights, String fileName) {
+    public void createKML(List<Flight> flights, String fileName, boolean file) {
         final Kml kml = new Kml();
         Document document = kml.createAndSetDocument().withName("Itinerary");
         LineString path = new LineString();
@@ -30,7 +30,13 @@ public class KMLOutput {
             String absolutePath = new File("").getAbsolutePath();
             absolutePath += "/src/Data/Output/" + fileName;
 
-            kml.marshal(new File(absolutePath));
+            if (file) {
+                kml.marshal(new File(absolutePath));
+
+            } else {
+                kml.marshal(System.out);
+            }
+
         } catch (FileNotFoundException e) {
             System.out.println("Some problem occurred with the KML output file");
         }

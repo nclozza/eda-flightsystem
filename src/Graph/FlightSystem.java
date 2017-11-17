@@ -58,9 +58,9 @@ public class FlightSystem {
     }
 
     void addFlight(String airline, int flightNr, List<String> flightDays, String origin, String destination,
-                   double departureTime, double duration, double price) {
+                   double departureTime, double duration, double price) throws Exception {
         if (!(airportHashMap.containsKey(origin) && airportHashMap.containsKey(destination))) {
-            throw new IllegalArgumentException("Wrong airports for that flight.\n");
+            throw new Exception();
         }
 
         Flight flight = new Flight(airline, flightNr, flightDays, airportHashMap.get(origin),
@@ -113,7 +113,7 @@ public class FlightSystem {
         private LinkedList<ItineraryFlightInfo> itineraryFlightInfoList;
         private HashSet<Airport> visitedAirports;
 
-        public PQAirport(Airport airport, Flight flight, String day) {
+        PQAirport(Airport airport, Flight flight, String day) {
             this.airport = airport;
             price = flight.getPrice();
             flightTime = new Time(flight.getDuration().getAllMinutes());
@@ -126,7 +126,7 @@ public class FlightSystem {
         }
 
 
-        public PQAirport(Airport airport, Flight previousFlight, PQAirport previousPQAirport, String day) {
+        PQAirport(Airport airport, Flight previousFlight, PQAirport previousPQAirport, String day) {
             this.airport = airport;
             price = previousFlight.getPrice() + previousPQAirport.price;
             flightTime = new Time(previousPQAirport.flightTime.getAllMinutes() + previousFlight.getDuration().getAllMinutes());
@@ -168,7 +168,7 @@ public class FlightSystem {
         }
     }
 
-    public PQAirport minPath(Airport origin, Airport destination, List<String> days, Comparator<PQAirport> pqComparator) {
+    private PQAirport minPath(Airport origin, Airport destination, List<String> days, Comparator<PQAirport> pqComparator) {
 
         clearMarks();
 
@@ -256,9 +256,9 @@ public class FlightSystem {
      * The implementation is the same for pr and ft, the only thing that changes is the comparator
      */
 
-    Itinerary setItinerary(String origin, String destination, List<String> days, String priority) {
+    Itinerary setItinerary(String origin, String destination, List<String> days, String priority) throws Exception {
         if (!(airportHashMap.containsKey(origin) && airportHashMap.containsKey(destination))) {
-            throw new IllegalArgumentException("Wrong Airports");
+            throw new Exception();
         }
 
         Airport originAirport = airportHashMap.get(origin);
@@ -282,6 +282,6 @@ public class FlightSystem {
                 return null;
         }
 
-        return new Itinerary(node.price, node.totalTime, node.flightTime, node.itineraryFlightInfoList);
+        return node == null ? null : new Itinerary(node.price, node.totalTime, node.flightTime, node.itineraryFlightInfoList);
     }
 }

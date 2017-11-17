@@ -3,10 +3,9 @@ package Outputs;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.List;
 
 public class TextOutput {
-    public void createText(boolean itineraryMade, String string, String fileName) {
+    public void createText(String string, String fileName) {
         BufferedWriter writer = null;
         try {
             String absolutePath = new File("").getAbsolutePath();
@@ -14,13 +13,7 @@ public class TextOutput {
 
             File logFile = new File(absolutePath);
             writer = new BufferedWriter(new FileWriter(logFile));
-
-            if(itineraryMade){
-                writer.write(string);
-            }
-            else {
-                writer.write("Not found");
-            }
+            writer.write(string);
 
         } catch (Exception e) {
             System.out.println("Some problem occurred with the output file");
