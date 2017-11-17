@@ -393,7 +393,7 @@ public class MainHandler {
     private LinkedList<String> processingFile(String path) {
         try {
             String[] aux = System.getProperty("os.name").split("");
-            String absolutePath
+            String absolutePath = null;
             if (aux[0].equals("Windows")) {
                 absolutePath = new File(Paths.get(".").toAbsolutePath().normalize().toString()).getAbsolutePath();
                 absolutePath += "\\" + path;
