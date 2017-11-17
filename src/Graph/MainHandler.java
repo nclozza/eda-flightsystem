@@ -77,6 +77,9 @@ public class MainHandler {
                                                 System.out.println("Wrong input");
                                             }
                                         }
+                                        else {
+                                            System.out.println("Wrong input");
+                                        }
 
                                     } else if (aux[2].equals("flights")) {
                                         if (aux.length == 5) {
