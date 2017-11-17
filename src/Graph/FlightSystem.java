@@ -70,6 +70,8 @@ public class FlightSystem {
         for (Airport a : airportList){
             a.deleteAllFlights();
         }
+
+        flightHashMap.clear();
     }
 
     Airport getAirport(String airportName) {

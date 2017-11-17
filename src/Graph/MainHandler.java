@@ -204,7 +204,7 @@ public class MainHandler {
                                 else {
 
                                     switch (aux[2]) {
-                                        case "airport":
+                                        case "airports":
                                             System.out.println("Deleting all airports");
                                             flightSystem.deleteAllAirports();
                                             break;
