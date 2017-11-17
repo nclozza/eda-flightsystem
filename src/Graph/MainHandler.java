@@ -69,10 +69,12 @@ public class MainHandler {
                                         if (aux.length == 5) {
                                             String path = aux[3];
                                             if (aux[4].equals("replace") || aux[4].equals("append")) {
-                                                System.out.println((aux[4].equals("replace") ? "Replacing" : "Appending")
-                                                                    + " all airports");
                                                 LinkedList<String> airports = processingFile(path);
-                                                addAirportsFromFile(airports, aux[4].equals("replace")); //aux[4] is append or replace
+                                                if (airports != null) {
+                                                    System.out.println((aux[4].equals("replace") ? "Replacing" : "Appending")
+                                                            + " all airports");
+                                                    addAirportsFromFile(airports, aux[4].equals("replace")); //aux[4] is append or replace
+                                                }
                                             } else {
                                                 System.out.println("Wrong input");
                                             }
@@ -284,9 +286,7 @@ public class MainHandler {
                         } catch (Exception e) {
                             System.out.println("Wrong Airports");
                         }
-
                         outputHandler(itinerary, textFile, fileName, KML);
-
                     } else {
                         System.out.println("Wrong input");
                     }
@@ -382,7 +382,9 @@ public class MainHandler {
     private LinkedList<String> processingFile(String path) {
         try {
             String absolutePath = new File("").getAbsolutePath();
+            if (!new File(absolutePath).exists()) return null;
             absolutePath += "/src/Data/Input/" + path;
+
             BufferedReader br = new BufferedReader(new FileReader(absolutePath));
             String line = br.readLine();
             LinkedList<String> ret = new LinkedList<>();
