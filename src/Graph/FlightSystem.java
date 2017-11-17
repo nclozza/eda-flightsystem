@@ -301,14 +301,14 @@ public class FlightSystem {
 
     private class ItineraryKey {
         private String request;
-        private int requestedFrecuency = 0;
+        private int requestedFrecuency = 1;
 
         ItineraryKey(String origin, String destination, String day, String criteria) {
             request = origin + destination + day + criteria;
         }
 
-        void updateFrequency() {
-            requestedFrecuency++;
+        void setRequestedFrecuency(int requestedFrecuency) {
+            this.requestedFrecuency = requestedFrecuency;
         }
 
         @Override
@@ -361,8 +361,14 @@ public class FlightSystem {
             ItineraryKey key = new ItineraryKey(origin, destination, day, priority);
 
             if (frequentItineraries.containsKey(key)) {
+                Itinerary retItinerary = frequentItineraries.get(key);
+                frequentItineraries.remove(key);
+                retItinerary.updateRequestRate();
+                int requestRate = retItinerary.getRequestRate();
+                key.setRequestedFrecuency(requestRate);
+                frequentItineraries.put(key, retItinerary);
 
-                return frequentItineraries.get(key);
+                return retItinerary;
             }
         }
 

@@ -9,6 +9,7 @@ public class Itinerary {
     private Time totalFlightTime;
     private Time flightTime;
     private List<ItineraryFlightInfo> flights;
+    private int requestRate = 1;
 
     public Itinerary(double price, Time totalFlightTime, Time flightTime, List<ItineraryFlightInfo> flights) {
         this.totalPrice = price;
@@ -38,6 +39,14 @@ public class Itinerary {
 
     public List<ItineraryFlightInfo> getFlights() {
         return flights;
+    }
+
+    public void updateRequestRate() {
+        requestRate++;
+    }
+
+    public int getRequestRate() {
+        return requestRate;
     }
 
     @Override
