@@ -46,256 +46,17 @@ public class MainHandler {
             String[] aux = input.split(" ");
             switch (aux[0]) {
                 case "insert":
-                    if (aux.length >= 2) {
-                        switch (aux[1]) {
-                            case "airport":
-                                if ((aux.length != 5)) System.out.println("Wrong input");
-                                else {
-                                    ValidateData.validateName(aux[2]); //aux[2] is name
-                                    ValidateData.validateLat(aux[3]); //aux[3] is lat
-                                    ValidateData.validateLng(aux[4]); //aux[4] is long
-
-                                    Double lat = Double.parseDouble(aux[3]);
-                                    Double lon = Double.parseDouble(aux[4]);
-
-                                    if (flightSystem.getAirport(aux[2]) != null) {
-                                        System.out.println("Airport already exists");
-                                    } else {
-                                        System.out.println("Inserted airport " + aux[2]);
-                                        flightSystem.addAirport(aux[2], lat, lon);
-                                    }
-                                }
-                                break;
-                            case "all":
-                                if (aux.length >= 3) {
-                                    if (aux[2].equals("airports")) {
-                                        if (aux.length == 5) {
-                                            String path = aux[3];
-                                            if (aux[4].equals("replace") || aux[4].equals("append")) {
-                                                System.out.println((aux[4].equals("replace") ? "Replacing" : "Appending")
-                                                                    + " all airports");
-                                                LinkedList<String> airports = processingFile(path);
-                                                addAirportsFromFile(airports, aux[4].equals("replace")); //aux[4] is append or replace
-                                            } else {
-                                                System.out.println("Wrong input");
-                                            }
-                                        }
-                                        else {
-                                            System.out.println("Wrong input");
-                                        }
-
-                                    } else if (aux[2].equals("flights")) {
-                                        if (aux.length == 5) {
-                                            String path = aux[3];
-                                            if (aux[4].equals("replace") || aux[4].equals("append")) {
-                                                System.out.println((aux[4].equals("replace") ? "Replacing" : "Appending")
-                                                                    + " all flights");
-                                                LinkedList<String> flights = processingFile(path);
-                                                addFlightsFromFile(flights, aux[4].equals("replace")); //aux[4] is append or replace
-                                            } else {
-                                                System.out.println("Wrong input");
-                                            }
-                                        } else {
-                                            System.out.println("Wrong input");
-                                        }
-                                    } else {
-                                        System.out.println("Wrong input");
-                                    }
-                                }
-                                break;
-                            case "flight":
-                                if (!(aux.length == 10)) System.out.println("Wrong input");
-                                else {
-                                    boolean state1 = ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]);
-                                    boolean state2 = ValidateData.validateDay(aux[4]) && ValidateData.validateOrigin(aux[5], flightSystem);
-                                    boolean state3 = ValidateData.validateDestiny(aux[6], flightSystem) && ValidateData.validateDepartureTime(aux[7]);
-                                    boolean state4 = ValidateData.validateFlightDuration(aux[8]) && ValidateData.validatePrice(aux[9]);
-
-                                    if (!(state1 && state2 && state3 && state4))
-                                        System.out.println("Wrong input");
-                                    else {
-                                        String aeroName = aux[2];
-                                        Integer flightNumber = Integer.parseInt(aux[3]);
-                                        String[] days = aux[4].split("-");
-                                        ArrayList<String> daysList = new ArrayList<>();
-
-                                        daysList.addAll(Arrays.asList(days));
-
-                                        String origName = aux[5];
-                                        String destName = aux[6];
-
-                                        boolean notFound = true;
-                                        Airport airportAuxOrigin = null;
-                                        int originIndex;
-                                        for (originIndex = 0; originIndex < flightSystem.getAirportList().size() && notFound; originIndex++) {
-                                            if (flightSystem.getAirportList().get(originIndex).getName().equals(origName))
-                                                airportAuxOrigin = flightSystem.getAirportList().get(originIndex);
-                                            notFound = false;
-                                        }
-
-                                        if (notFound) {
-                                            System.out.println("Origin not valid");
-                                            break;
-                                        }
-
-                                        notFound = true;
-                                        Airport airportAuxDestination = null;
-                                        for (int i = 0; i < flightSystem.getAirportList().size() && notFound; i++) {
-                                            if (flightSystem.getAirportList().get(i).getName().equals(destName))
-                                                airportAuxDestination = flightSystem.getAirportList().get(i);
-                                            notFound = false;
-                                        }
-
-                                        if (notFound) {
-                                            System.out.println("Destination not valid");
-                                            break;
-                                        }
-
-                                        String[] aux2 = aux[7].split(":");
-                                        Integer hour = Integer.parseInt(aux2[0]);
-                                        Integer min = Integer.parseInt(aux2[1]);
-                                        String duration[] = aux[8].split("h");
-                                        duration[1] = duration[1].replace("m", "");
-                                        Integer longInH = Integer.parseInt(duration[0]);
-                                        Integer longInM = Integer.parseInt(duration[1]);
-                                        Double price = Double.valueOf(aux[9]);
-
-                                        if (flightSystem.containsFlight(aeroName, flightNumber)) {
-                                            System.out.println("That flight already exists");
-
-                                        } else {
-                                            try {
-                                                flightSystem.addFlight(aeroName, flightNumber, daysList, origName,
-                                                        destName, (hour*60)+min,
-                                                        (longInH*60)+longInM, price);
-                                            } catch (Exception e) {
-                                                System.out.println("Exception found");
-                                            }
-
-                                            System.out.println("Inserting flight " + aux[2] + " - " + aux[3]);
-                                        }
-                                    }
-                                }
-                                break;
-                            default:
-                                System.out.println("Wrong input");
-                        }
-                    } else {
-                        System.out.println("Wrong input");
-                    }
+                    insert(aux);
                     break;
                 case "delete":
-                    if (aux.length >= 2) {
-                        switch (aux[1]) {
-                            case "airport":
-                                if (!(aux.length == 3)) System.out.println("Wrong input");
-                                else {
-                                    if (flightSystem.deleteAirport(aux[2])) {
-                                        System.out.println("Deleting airport " + aux[2]);
-
-                                    } else {
-                                        System.out.println("Airport " + aux[2] + " does not exist");
-                                    }
-                                }
-                                break;
-                            case "flight":
-                                System.out.println(aux[2]);
-                                System.out.println(aux[3]);
-                                if (!(aux.length == 4)) {
-                                    System.out.println("Wrong input");
-                                } else if (!(ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]))) {
-                                    flightSystem.deleteFlight(aux[2], Integer.parseInt(aux[3]));
-                                } else {
-                                    System.out.println("The flight you want to delete does not exist");
-                                }
-
-                                break;
-                            case "all":
-                                if (!(aux.length == 3)) System.out.println("Wrong input");
-                                else {
-
-                                    switch (aux[2]) {
-                                        case "airports":
-                                            System.out.println("Deleting all airports");
-                                            flightSystem.deleteAllAirports();
-                                            break;
-                                        case "flights":
-                                            System.out.println("Deleting all flights");
-                                            flightSystem.deleteAllFlights();
-                                            break;
-                                        default:
-                                            System.out.println("Wrong input");
-                                            break;
-                                    }
-                                }
-                                break;
-                            default:
-                                System.out.println("Wrong input");
-                                break;
-                        }
-                    } else {
-                        System.out.println("Wrong input");
-                    }
+                    delete(aux);
                     break;
                 case "findRoute":
-
-                    if (aux.length == 5
-                        && ValidateData.validateName(aux[1]) //origin
-                        && ValidateData.validateName(aux[2]) //destination
-                        && (aux[3].equals("ft") || aux[3].equals("pr") || aux[3].equals("tt"))
-                        && ValidateData.validateDay(aux[4]) /*days*/) {
-
-                        String origin = aux[1];
-                        String destination = aux[2];
-                        String days[] = aux[4].split("-");
-                        LinkedList<String> daysList = new LinkedList<>();
-                        daysList.addAll(Arrays.asList(days));
-
-                        Itinerary itinerary = null;
-
-                        try {
-                            itinerary = flightSystem.setItinerary(origin, destination, daysList, aux[3]);
-                        } catch (Exception e) {
-                            System.out.println("Wrong Airports");
-                        }
-
-                        if (itinerary == null) {
-                            System.out.println("Couldn't find an appropriate flight itinerary");
-
-                        } else {
-                            outputHandler(itinerary, textFile, fileName, KML);
-                        }
-
-                    } else {
-                        System.out.println("Wrong input");
-                    }
+                    findRoute(aux, textFile, fileName, KML);
                     break;
 
                 case "worldTrip":
-
-                    if (aux.length == 4
-                        && ValidateData.validateName(aux[1]) //origin
-                        && (aux[2].equals("ft") || aux[2].equals("pr") || aux[2].equals("tt"))
-                        && ValidateData.validateDay(aux[3]) /*days*/) {
-
-                        String origin = aux[1];
-                        String days[] = aux[3].split("-");
-                        LinkedList<String> daysList = new LinkedList<>();
-                        daysList.addAll(Arrays.asList(days));
-
-                        Itinerary itinerary = null;
-
-                        try {
-                            itinerary = flightSystem.setItinerary(origin, origin, daysList, aux[2]);
-                        } catch (Exception e) {
-                            System.out.println("Wrong Airports");
-                        }
-
-                        outputHandler(itinerary, textFile, fileName, KML);
-
-                    } else {
-                        System.out.println("Wrong input");
-                    }
+                    worldTrip(aux, textFile, fileName, KML);
                     break;
 
                 case "exit":
@@ -330,6 +91,7 @@ public class MainHandler {
                         }
                     }
                     break;
+
                 default:
                     System.out.println("Wrong input");
                     break;
@@ -461,6 +223,287 @@ public class MainHandler {
         }
     }
 
+    private void insert(String[] aux) {
+        if (aux.length >= 2) {
+            switch (aux[1]) {
+                case "airport":
+                    insertAirport(aux);
+                    break;
+                case "all":
+                    insertAll(aux);
+                    break;
+                case "flight":
+                    insertFlight(aux);
+                    break;
+                default:
+                    System.out.println("Wrong input");
+            }
+        } else {
+            System.out.println("Wrong input");
+        }
+    }
+
+    private void insertAirport(String[] aux) {
+        if ((aux.length != 5)) System.out.println("Wrong input");
+        else {
+            ValidateData.validateName(aux[2]); //aux[2] is name
+            ValidateData.validateLat(aux[3]); //aux[3] is lat
+            ValidateData.validateLng(aux[4]); //aux[4] is long
+
+            Double lat = Double.parseDouble(aux[3]);
+            Double lon = Double.parseDouble(aux[4]);
+
+            if (flightSystem.getAirport(aux[2]) != null) {
+                System.out.println("Airport already exists");
+            } else {
+                System.out.println("Inserted airport " + aux[2]);
+                flightSystem.addAirport(aux[2], lat, lon);
+            }
+        }
+    }
+
+    private void insertFlight(String[] aux) {
+        if (!(aux.length == 10)) System.out.println("Wrong input");
+        else {
+            boolean state1 = ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]);
+            boolean state2 = ValidateData.validateDay(aux[4]) && ValidateData.validateOrigin(aux[5], flightSystem);
+            boolean state3 = ValidateData.validateDestiny(aux[6], flightSystem) && ValidateData.validateDepartureTime(aux[7]);
+            boolean state4 = ValidateData.validateFlightDuration(aux[8]) && ValidateData.validatePrice(aux[9]);
+
+            if (!(state1 && state2 && state3 && state4))
+                System.out.println("Wrong input");
+            else {
+                String aeroName = aux[2];
+                Integer flightNumber = Integer.parseInt(aux[3]);
+                String[] days = aux[4].split("-");
+                ArrayList<String> daysList = new ArrayList<>();
+
+                daysList.addAll(Arrays.asList(days));
+
+                String origName = aux[5];
+                String destName = aux[6];
+
+                boolean notFound = true;
+                Airport airportAuxOrigin = null;
+                int originIndex;
+                for (originIndex = 0; originIndex < flightSystem.getAirportList().size() && notFound; originIndex++) {
+                    if (flightSystem.getAirportList().get(originIndex).getName().equals(origName))
+                        airportAuxOrigin = flightSystem.getAirportList().get(originIndex);
+                    notFound = false;
+                }
+
+                if (notFound) {
+                    System.out.println("Origin not valid");
+                    return;
+                }
+
+                notFound = true;
+                Airport airportAuxDestination = null;
+                for (int i = 0; i < flightSystem.getAirportList().size() && notFound; i++) {
+                    if (flightSystem.getAirportList().get(i).getName().equals(destName))
+                        airportAuxDestination = flightSystem.getAirportList().get(i);
+                    notFound = false;
+                }
+
+                if (notFound) {
+                    System.out.println("Destination not valid");
+                    return;
+                }
+
+                String[] aux2 = aux[7].split(":");
+                Integer hour = Integer.parseInt(aux2[0]);
+                Integer min = Integer.parseInt(aux2[1]);
+                String duration[] = aux[8].split("h");
+                duration[1] = duration[1].replace("m", "");
+                Integer longInH = Integer.parseInt(duration[0]);
+                Integer longInM = Integer.parseInt(duration[1]);
+                Double price = Double.valueOf(aux[9]);
+
+                if (flightSystem.containsFlight(aeroName, flightNumber)) {
+                    System.out.println("That flight already exists");
+
+                } else {
+                    try {
+                        flightSystem.addFlight(aeroName, flightNumber, daysList, origName,
+                                destName, (hour*60)+min,
+                                (longInH*60)+longInM, price);
+                    } catch (Exception e) {
+                        System.out.println("Exception found");
+                    }
+
+                    System.out.println("Inserting flight " + aux[2] + " - " + aux[3]);
+                }
+            }
+        }
+    }
+
+    private void insertAllFlights(String[] aux) {
+        if (aux.length == 5) {
+            String path = aux[3];
+            if (aux[4].equals("replace") || aux[4].equals("append")) {
+                System.out.println((aux[4].equals("replace") ? "Replacing" : "Appending")
+                        + " all flights");
+                LinkedList<String> flights = processingFile(path);
+                addFlightsFromFile(flights, aux[4].equals("replace")); //aux[4] is append or replace
+            } else {
+                System.out.println("Wrong input");
+            }
+        } else {
+            System.out.println("Wrong input");
+        }
+    }
+
+    private void insertAllAirports(String[] aux) {
+        if (aux.length == 5) {
+            String path = aux[3];
+            if (aux[4].equals("replace") || aux[4].equals("append")) {
+                System.out.println((aux[4].equals("replace") ? "Replacing" : "Appending")
+                        + " all airports");
+                LinkedList<String> airports = processingFile(path);
+                addAirportsFromFile(airports, aux[4].equals("replace")); //aux[4] is append or replace
+            } else {
+                System.out.println("Wrong input");
+            }
+        }
+        else {
+            System.out.println("Wrong input");
+        }
+    }
+
+    private void insertAll(String[] aux) {
+        if (aux.length >= 3) {
+            if (aux[2].equals("airports")) {
+                insertAllAirports(aux);
+            } else if (aux[2].equals("flights")) {
+                insertAllFlights(aux);
+            } else {
+                System.out.println("Wrong input");
+            }
+        }
+    }
+
+    private void delete(String[] aux) {
+        if (aux.length >= 2) {
+            switch (aux[1]) {
+                case "airport":
+                    deleteAirport(aux);
+                    break;
+                case "flight":
+                    deleteFlight(aux);
+                    break;
+                case "all":
+                    deleteAll(aux);
+                    break;
+                default:
+                    System.out.println("Wrong input");
+                    break;
+            }
+        } else {
+            System.out.println("Wrong input");
+        }
+    }
+
+    private void deleteAirport(String[] aux) {
+        if (!(aux.length == 3)) System.out.println("Wrong input");
+        else {
+            if (flightSystem.deleteAirport(aux[2])) {
+                System.out.println("Deleting airport " + aux[2]);
+
+            } else {
+                System.out.println("Airport " + aux[2] + " does not exist");
+            }
+        }
+    }
+
+    private void deleteFlight(String[] aux) {
+        System.out.println(aux[2]);
+        System.out.println(aux[3]);
+        if (!(aux.length == 4)) {
+            System.out.println("Wrong input");
+        } else if (!(ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]))) {
+            flightSystem.deleteFlight(aux[2], Integer.parseInt(aux[3]));
+        } else {
+            System.out.println("The flight you want to delete does not exist");
+        }
+    }
+
+    private void deleteAll(String[] aux) {
+        if (!(aux.length == 3)) System.out.println("Wrong input");
+        else {
+            switch (aux[2]) {
+                case "airports":
+                    System.out.println("Deleting all airports");
+                    flightSystem.deleteAllAirports();
+                    break;
+                case "flights":
+                    System.out.println("Deleting all flights");
+                    flightSystem.deleteAllFlights();
+                    break;
+                default:
+                    System.out.println("Wrong input");
+                    break;
+            }
+        }
+    }
+
+    private void findRoute(String[] aux, boolean textFile, String fileName, boolean KML) {
+        if (aux.length == 5
+                && ValidateData.validateName(aux[1]) //origin
+                && ValidateData.validateName(aux[2]) //destination
+                && (aux[3].equals("ft") || aux[3].equals("pr") || aux[3].equals("tt"))
+                && ValidateData.validateDay(aux[4]) /*days*/) {
+
+            String origin = aux[1];
+            String destination = aux[2];
+            String days[] = aux[4].split("-");
+            LinkedList<String> daysList = new LinkedList<>();
+            daysList.addAll(Arrays.asList(days));
+
+            Itinerary itinerary = null;
+
+            try {
+                itinerary = flightSystem.setItinerary(origin, destination, daysList, aux[3]);
+            } catch (Exception e) {
+                System.out.println("Wrong Airports");
+            }
+
+            if (itinerary == null) {
+                System.out.println("Couldn't find an appropriate flight itinerary");
+
+            } else {
+                outputHandler(itinerary, textFile, fileName, KML);
+            }
+
+        } else {
+            System.out.println("Wrong input");
+        }
+    }
+
+    private void worldTrip(String[] aux, boolean textFile, String fileName, boolean KML) {
+        if (aux.length == 4
+                && ValidateData.validateName(aux[1]) //origin
+                && (aux[2].equals("ft") || aux[2].equals("pr") || aux[2].equals("tt"))
+                && ValidateData.validateDay(aux[3]) /*days*/) {
+
+            String origin = aux[1];
+            String days[] = aux[3].split("-");
+            LinkedList<String> daysList = new LinkedList<>();
+            daysList.addAll(Arrays.asList(days));
+
+            Itinerary itinerary = null;
+
+            try {
+                itinerary = flightSystem.setItinerary(origin, origin, daysList, aux[2]);
+            } catch (Exception e) {
+                System.out.println("Wrong Airports");
+            }
+
+            outputHandler(itinerary, textFile, fileName, KML);
+
+        } else {
+            System.out.println("Wrong input");
+        }
+    }
 
     public FlightSystem getFlightSystem() {
         return flightSystem;
