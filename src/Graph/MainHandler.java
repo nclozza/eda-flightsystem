@@ -219,9 +219,15 @@ public class MainHandler {
             LinkedList<String> daysList = new LinkedList<>();
             daysList.addAll(Arrays.asList(days));
 
-            Itinerary itinerary = flightSystem.setItinerary(origin, destination, daysList, aux[3]);
+              Itinerary itinerary = null;
 
-            if (itinerary == null) {
+              try {
+                  itinerary = flightSystem.setItinerary(origin, destination, daysList, aux[3]);
+              } catch (Exception e) {
+                  System.out.println("Wrong Airports");
+              }
+
+              if (itinerary == null) {
                 System.out.println("Can't find an appropriate flight itinerary");
 
             } else {
@@ -234,10 +240,31 @@ public class MainHandler {
           break;
 
         case "worldTrip":
-          System.out.println(aux[0]);
           //Sintaxis: worldTrip [origen] [prioridad{ft|pr|tt}] [diasSemana]
-          //Aca solo falta validar o ver como haces para validar lo de prioridad
-          break;
+            if (aux.length == 4
+                && ValidateData.validateName(aux[1]) //origen
+                && (aux[2].equals("ft") || aux[2].equals("pr") || aux[2].equals("tt"))
+                && ValidateData.validateDay(aux[3]) /*days*/) {
+
+                String origin = aux[1];
+                String days[] = aux[3].split("-");
+                LinkedList<String> daysList = new LinkedList<>();
+                daysList.addAll(Arrays.asList(days));
+
+                Itinerary itinerary = null;
+
+                try {
+                    itinerary = flightSystem.setItinerary(origin, origin, daysList, aux[2]);
+                } catch (Exception e) {
+                    System.out.println("Wrong Airports");
+                }
+
+                outputHandler(itinerary, textFile, fileName, KML);
+
+            } else {
+                System.out.println("Wrong input");
+            }
+            break;
 
           case "exit":
           System.out.print("See you soon");
@@ -313,8 +340,12 @@ public class MainHandler {
       duration[1] = duration[1].replace("m", "");
       double durationTime = Double.parseDouble(duration[0]) + Double.parseDouble(duration[1]);
 
-      flightSystem.addFlight(aux[0], Integer.parseInt(aux[1]), daysList, aux[3], aux[4],
-                                departureTime, durationTime, Double.parseDouble(aux[7]));
+        try {
+            flightSystem.addFlight(aux[0], Integer.parseInt(aux[1]), daysList, aux[3], aux[4],
+                                      departureTime, durationTime, Double.parseDouble(aux[7]));
+        } catch (Exception e) {
+            System.out.println("Wrong airports for that flight.\n");
+        }
 
     }
   }
@@ -335,13 +366,13 @@ public class MainHandler {
       }
       return ret;
     } catch (IOException e) {
-      e.printStackTrace();
+      System.out.println("File not found");
     }
     return null;
   }
 
   private void outputHandler(Itinerary itinerary, boolean textFile, String fileName, boolean KML) {
-      if (textFile) {
+      if (itinerary != null) {
           if (KML) {
               KMLOutput kmlOutput = new KMLOutput();
               LinkedList<Flight> flights = new LinkedList<>();
@@ -350,30 +381,37 @@ public class MainHandler {
                   flights.add(each.getFlight());
               }
 
-              kmlOutput.createKML(flights, fileName);
+              kmlOutput.createKML(flights, fileName, textFile);
 
           } else {
-              String ret = "";
-              ret += "Precio#" + itinerary.getTotalPrice() + "\n";
-              ret += "TiempoVuelo#" + itinerary.getFlightTime().toString() + "\n";
-              ret += "TiempoTotal#" + itinerary.getTotalFlightTime().toString() + "\n\n";
+              StringBuilder ret = new StringBuilder();
+              ret.append("Precio#").append(itinerary.getTotalPrice()).append("\n");
+              ret.append("TiempoVuelo#").append(itinerary.getFlightTime().toString()).append("\n");
+              ret.append("TiempoTotal#").append(itinerary.getTotalFlightTime().toString()).append("\n\n");
 
               for (ItineraryFlightInfo each : itinerary.getFlights()) {
-                  ret += each.getFlight().getOrigin().getName()+ "#"
-                      + each.getFlight().getAirline() + "#"
-                      + each.getFlight().getFlightNr() + "#"
-                      + each.getArrivalDay().getDayName() + "#"
-                      + each.getFlight().getDestination().getName() + "\n";
+                  ret.append(each.getFlight().getOrigin().getName()).append("#")
+                      .append(each.getFlight().getAirline()).append("#")
+                      .append(each.getFlight().getFlightNr()).append("#")
+                      .append(each.getArrivalDay().getDayName()).append("#")
+                      .append(each.getFlight().getDestination().getName()).append("\n");
               }
 
-              TextOutput textOutput = new TextOutput();
-              textOutput.createText(itinerary != null, ret, fileName);
+              if (textFile) {
+                  TextOutput textOutput = new TextOutput();
+                  textOutput.createText(ret.toString(), fileName);
+              } else {
+                  System.out.println(ret);
+              }
           }
-
       } else {
-          System.out.println(itinerary);
+          if (textFile) {
+              TextOutput textOutput = new TextOutput();
+              textOutput.createText("NotFound", fileName);
+          } else {
+              System.out.println("NotFound");
+          }
       }
-
   }
 
   public FlightSystem getFlightSystem() {
