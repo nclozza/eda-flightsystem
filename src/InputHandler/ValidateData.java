@@ -82,13 +82,21 @@ public class ValidateData {
 
         minString = minString.replace("m", "");
         //We assume a flight cannot last more than 99hs.
-        Integer hours = Integer.parseInt(hourString);
+        Integer hours = 0, minutes = 0;
 
-        if (hours < 0) {
+        try {
+            hours = Integer.parseInt(hourString);
+
+            if (hours < 0) {
+                return false;
+            }
+
+            minutes = Integer.parseInt(minString);
+
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
-
-        Integer minutes = Integer.parseInt(minString);
 
         return minutes >= 0 && minutes <= 59;
     }

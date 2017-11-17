@@ -165,7 +165,6 @@ public class FlightSystem {
             visitedAirports.add(flight.getOrigin());
         }
 
-
         PQAirport(Airport airport, Flight previousFlight, PQAirport previousPQAirport, String day) {
             this.airport = airport;
             price = previousFlight.getPrice() + previousPQAirport.price;
@@ -227,7 +226,7 @@ public class FlightSystem {
         */
 
         /**
-         * Modified Djikstra that only queues flights which depart on one of the given days
+         * Modified Dijkstra that only queues flights which depart on one of the given days
          */
 
         PriorityQueue<PQAirport> priorityQueue = new PriorityQueue<>(pqComparator);
@@ -244,10 +243,10 @@ public class FlightSystem {
 
                         priorityQueue.offer(pqAirport);
                     }
-
                 }
             }
         }
+
         /**
          * Dijkstra's algorithm starting from the second step with price priority
          */
@@ -275,7 +274,6 @@ public class FlightSystem {
                     }
                 }
             }
-
         }
 
         // Our queue has been emptied and we haven't found our minimum valued path.

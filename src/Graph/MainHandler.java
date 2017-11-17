@@ -165,7 +165,9 @@ public class MainHandler {
 
                                         } else {
                                             try {
-                                                flightSystem.addFlight(aeroName,flightNumber, daysList, origName, destName, (hour*60)+min, (longInH*60)+longInM ,price);
+                                                flightSystem.addFlight(aeroName, flightNumber, daysList, origName,
+                                                        destName, (hour*60)+min,
+                                                        (longInH*60)+longInM, price);
                                             } catch (Exception e) {
                                                 System.out.println("Exception found");
                                             }
@@ -297,7 +299,7 @@ public class MainHandler {
                     break;
 
                 case "exit":
-                    System.out.print("See you soon");
+                    System.out.print("See you soon\n");
                     return;
 
                 case "outputFormat":
@@ -369,11 +371,11 @@ public class MainHandler {
                 daysList.addAll(Arrays.asList(days));
 
                 String departureHour[] = aux[5].split(":");
-                int departureTime = Integer.parseInt(departureHour[0]) + Integer.parseInt(departureHour[1]);
+                int departureTime = (Integer.parseInt(departureHour[0])*60) + Integer.parseInt(departureHour[1]);
 
                 String duration[] = aux[6].split("h");
                 duration[1] = duration[1].replace("m", "");
-                int durationTime = Integer.parseInt(duration[0]) + Integer.parseInt(duration[1]);
+                int durationTime = (Integer.parseInt(duration[0])*60) + Integer.parseInt(duration[1]);
 
                 if (flightSystem.containsFlight(aux[0], Integer.parseInt(aux[1]))) {
                     System.out.println("Flight " + aux[0] + " " + aux[1] + " already exist");
