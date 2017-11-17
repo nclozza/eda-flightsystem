@@ -27,7 +27,7 @@ public class KMLOutput {
         Style style = document.createAndAddStyle().withId("PathStyle");
         LineStyle pathSyle = style.createAndSetLineStyle().withColor("ff33ccff").withWidth(3);
 
-        document.createAndAddPlacemark().withStyleUrl("#PathStyle").setGeometry(path);
+        document.createAndAddPlacemark().withStyleUrl("#PathStyle").withName("Path").setGeometry(path);
 
         try {
             String absolutePath = new File("").getAbsolutePath();
