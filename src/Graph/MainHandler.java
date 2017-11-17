@@ -341,14 +341,18 @@ public class MainHandler {
         if (clear) {
             flightSystem.deleteAllAirports();
         }
+        try {
+            for (String eachAirport : airportsFromFile) {
+                String aux[] = eachAirport.split("#");
 
-        for (String eachAirport : airportsFromFile) {
-            String aux[] = eachAirport.split("#");
-
-            if (flightSystem.getAirport(aux[0]) == null) {
-                flightSystem.addAirport(aux[0], Double.parseDouble(aux[1]), Double.parseDouble(aux[2]));
+                if (flightSystem.getAirport(aux[0]) == null) {
+                    flightSystem.addAirport(aux[0], Double.parseDouble(aux[1]), Double.parseDouble(aux[2]));
+                }
             }
+        } catch (Exception e){
+            System.out.println("File not found");
         }
+
     }
 
     private void addFlightsFromFile(LinkedList<String> flightsFromFile, boolean clear) {
@@ -356,30 +360,34 @@ public class MainHandler {
             flightSystem.deleteAllFlights();
         }
 
-        for (String eachFlight : flightsFromFile) {
-            String aux[] = eachFlight.split("#");
+        try {
+            for (String eachFlight : flightsFromFile) {
+                String aux[] = eachFlight.split("#");
 
-            String days[] = aux[2].split("-");
-            LinkedList<String> daysList = new LinkedList<>();
-            daysList.addAll(Arrays.asList(days));
+                String days[] = aux[2].split("-");
+                LinkedList<String> daysList = new LinkedList<>();
+                daysList.addAll(Arrays.asList(days));
 
-            String departureHour[] = aux[5].split(":");
-            int departureTime = Integer.parseInt(departureHour[0]) + Integer.parseInt(departureHour[1]);
+                String departureHour[] = aux[5].split(":");
+                int departureTime = Integer.parseInt(departureHour[0]) + Integer.parseInt(departureHour[1]);
 
-            String duration[] = aux[6].split("h");
-            duration[1] = duration[1].replace("m", "");
-            int durationTime = Integer.parseInt(duration[0]) + Integer.parseInt(duration[1]);
+                String duration[] = aux[6].split("h");
+                duration[1] = duration[1].replace("m", "");
+                int durationTime = Integer.parseInt(duration[0]) + Integer.parseInt(duration[1]);
 
-            if (flightSystem.containsFlight(aux[0], Integer.parseInt(aux[1]))) {
-                System.out.println("Flight " + aux[0] + " " + aux[1] + " already exist");
-            } else {
-                try {
-                    flightSystem.addFlight(aux[0], Integer.parseInt(aux[1]), daysList, aux[3], aux[4],
-                        departureTime, durationTime, Double.parseDouble(aux[7]));
-                } catch (Exception e) {
-                    System.out.println("Wrong airports for that flight.");
+                if (flightSystem.containsFlight(aux[0], Integer.parseInt(aux[1]))) {
+                    System.out.println("Flight " + aux[0] + " " + aux[1] + " already exist");
+                } else {
+                    try {
+                        flightSystem.addFlight(aux[0], Integer.parseInt(aux[1]), daysList, aux[3], aux[4],
+                                departureTime, durationTime, Double.parseDouble(aux[7]));
+                    } catch (Exception e) {
+                        System.out.println("Wrong airports for that flight.");
+                    }
                 }
             }
+        }catch (Exception e){
+            System.out.println("File not found");
         }
     }
 
