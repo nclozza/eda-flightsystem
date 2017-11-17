@@ -1,0 +1,18 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="eda-flightsystem:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/eda_flightsystem_jar</output-path>
+    <properties id="ant-preprocessing">
+      <options enabled="true" />
+    </properties>
+    <root id="archive" name="eda-flightsystem.jar">
+      <element id="module-output" name="eda-flightsystem" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/de/micromata/jak/JavaAPIforKml/2.2.0/JavaAPIforKml-2.2.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/sun/xml/bind/jaxb-impl/2.2/jaxb-impl-2.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/xml/bind/jaxb-api/2.2/jaxb-api-2.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/sun/xml/bind/jaxb-xjc/2.2/jaxb-xjc-2.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/xmlunit/xmlunit/1.2/xmlunit-1.2.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

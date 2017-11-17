@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="eda-flightsystem" default="all">
+  
+  
+  <property file="build.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*.yarb/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.swc"/>
+    <include name="*.zip"/>
+    <include name="**/*.zip"/>
+    <include name="*.egg"/>
+    <include name="*.ane"/>
+    <include name="*.jar"/>
+    <include name="**/*.jar"/>
+    <include name="*.ear"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+    <exclude name="**/?*.aj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.8" value="${jdk.home.1.8}/bin"/>
+  <path id="jdk.classpath.1.8">
+    <fileset dir="${jdk.home.1.8}">
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/deploy.jar"/>
+      <include name="jre/lib/ext/access-bridge-32.jar"/>
+      <include name="jre/lib/ext/cldrdata.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/jaccess.jar"/>
+      <include name="jre/lib/ext/jfxrt.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/nashorn.jar"/>
+      <include name="jre/lib/ext/sunec.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunmscapi.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+      <include name="jre/lib/ext/zipfs.jar"/>
+      <include name="jre/lib/javaws.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jfr.jar"/>
+      <include name="jre/lib/jfxswt.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/management-agent.jar"/>
+      <include name="jre/lib/plugin.jar"/>
+      <include name="jre/lib/resources.jar"/>
+      <include name="jre/lib/rt.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.8}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.8}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.8"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.de.micromata.jak:javaapiforkml:2.2.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/sun/xml/bind/jaxb-impl/2.2/jaxb-impl-2.2.jar"/>
+    <pathelement location="${path.variable.maven_repository}/com/sun/xml/bind/jaxb-xjc/2.2/jaxb-xjc-2.2.jar"/>
+    <pathelement location="${path.variable.maven_repository}/de/micromata/jak/JavaAPIforKml/2.2.0/JavaAPIforKml-2.2.0.jar"/>
+    <pathelement location="${path.variable.maven_repository}/javax/activation/activation/1.1/activation-1.1.jar"/>
+    <pathelement location="${path.variable.maven_repository}/javax/xml/bind/jaxb-api/2.2/jaxb-api-2.2.jar"/>
+    <pathelement location="${path.variable.maven_repository}/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar"/>
+    <pathelement location="${path.variable.maven_repository}/xmlunit/xmlunit/1.2/xmlunit-1.2.jar"/>
+  </path>
+  <!-- Register Custom Compiler Taskdefs -->
+  <property name="javac2.home" value="${idea.home}/lib"/>
+  <path id="javac2.classpath">
+    <pathelement location="${javac2.home}/javac2.jar"/>
+    <pathelement location="${javac2.home}/jdom.jar"/>
+    <pathelement location="${javac2.home}/asm-all.jar"/>
+    <pathelement location="${javac2.home}/jgoodies-forms.jar"/>
+  </path>
+  <target name="register.custom.compilers">
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
+  </target>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module eda-flightsystem -->
+  
+  <dirname property="module.eda-flightsystem.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.eda-flightsystem" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.eda-flightsystem" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.eda-flightsystem" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.eda-flightsystem" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="eda-flightsystem.output.dir" value="${module.eda-flightsystem.basedir}/out/production/eda-flightsystem"/>
+  <property name="eda-flightsystem.testoutput.dir" value="${module.eda-flightsystem.basedir}/out/test/eda-flightsystem"/>
+  
+  <path id="eda-flightsystem.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="eda-flightsystem.module.production.classpath">
+    <path refid="${module.jdk.classpath.eda-flightsystem}"/>
+    <path refid="library.de.micromata.jak:javaapiforkml:2.2.0.classpath"/>
+  </path>
+  
+  <path id="eda-flightsystem.runtime.production.module.classpath">
+    <pathelement location="${eda-flightsystem.output.dir}"/>
+    <path refid="library.de.micromata.jak:javaapiforkml:2.2.0.classpath"/>
+  </path>
+  
+  <path id="eda-flightsystem.module.classpath">
+    <path refid="${module.jdk.classpath.eda-flightsystem}"/>
+    <pathelement location="${eda-flightsystem.output.dir}"/>
+    <path refid="library.de.micromata.jak:javaapiforkml:2.2.0.classpath"/>
+  </path>
+  
+  <path id="eda-flightsystem.runtime.module.classpath">
+    <pathelement location="${eda-flightsystem.testoutput.dir}"/>
+    <pathelement location="${eda-flightsystem.output.dir}"/>
+    <path refid="library.de.micromata.jak:javaapiforkml:2.2.0.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.eda-flightsystem">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.eda-flightsystem">
+    <patternset refid="excluded.from.module.eda-flightsystem"/>
+  </patternset>
+  
+  <path id="eda-flightsystem.module.sourcepath">
+    <dirset dir="${module.eda-flightsystem.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.eda-flightsystem" depends="compile.module.eda-flightsystem.production,compile.module.eda-flightsystem.tests" description="Compile module eda-flightsystem"/>
+  
+  <target name="compile.module.eda-flightsystem.production" depends="register.custom.compilers" description="Compile module eda-flightsystem; production classes">
+    <mkdir dir="${eda-flightsystem.output.dir}"/>
+    <javac2 destdir="${eda-flightsystem.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.eda-flightsystem}/javac">
+      <compilerarg line="${compiler.args.eda-flightsystem}"/>
+      <bootclasspath refid="eda-flightsystem.module.bootclasspath"/>
+      <classpath refid="eda-flightsystem.module.production.classpath"/>
+      <src refid="eda-flightsystem.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.eda-flightsystem"/>
+    </javac2>
+    
+    <copy todir="${eda-flightsystem.output.dir}">
+      <fileset dir="${module.eda-flightsystem.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.eda-flightsystem.tests" depends="register.custom.compilers,compile.module.eda-flightsystem.production" description="compile module eda-flightsystem; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.eda-flightsystem" description="cleanup module">
+    <delete dir="${eda-flightsystem.output.dir}"/>
+    <delete dir="${eda-flightsystem.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.eda-flightsystem" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.eda-flightsystem" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>

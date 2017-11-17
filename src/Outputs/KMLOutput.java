@@ -40,6 +40,7 @@ public class KMLOutput {
                 kml.marshal(System.out);
             }
 
+
         } catch (FileNotFoundException e) {
             System.out.println("Some problem occurred with the KML output file");
         }
