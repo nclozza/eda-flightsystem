@@ -18,7 +18,10 @@ public class KMLOutput {
         for(Flight f : flights){
             document.createAndAddPlacemark().withName(f.getOrigin().getName()).withOpen(Boolean.TRUE)
                 .createAndSetPoint().addToCoordinates(f.getOrigin().getPosition().getLatitude(),f.getOrigin().getPosition().getLongitude());
+            document.createAndAddPlacemark().withName(f.getDestination().getName()).withOpen(Boolean.TRUE)
+                .createAndSetPoint().addToCoordinates(f.getDestination().getPosition().getLatitude(),f.getDestination().getPosition().getLongitude());
             path.addToCoordinates(f.getOrigin().getPosition().getLatitude(),f.getOrigin().getPosition().getLongitude());
+            path.addToCoordinates(f.getDestination().getPosition().getLatitude(),f.getDestination().getPosition().getLongitude());
 
         }
         Style style = document.createAndAddStyle().withId("PathStyle");
