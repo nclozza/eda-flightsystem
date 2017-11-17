@@ -58,7 +58,7 @@ public class FlightSystem {
     }
 
     void addFlight(String airline, int flightNr, List<String> flightDays, String origin, String destination,
-                   double departureTime, double duration, double price) throws Exception {
+                   int departureTime, int duration, double price) throws Exception {
         if (!(airportHashMap.containsKey(origin) && airportHashMap.containsKey(destination))) {
             throw new Exception();
         }
@@ -150,9 +150,9 @@ public class FlightSystem {
             return totalTime;
         }
 
-        private double calculateWaitingTime(ItineraryFlightInfo itineraryFlightInfo, Day day, Flight flight) {
+        private int calculateWaitingTime(ItineraryFlightInfo itineraryFlightInfo, Day day, Flight flight) {
             int daysBetween = 0;
-            double totalMinutesInOneDay = 24 * 60;
+            int totalMinutesInOneDay = 24 * 60;
 
             if (itineraryFlightInfo.getArrivalDay().getDayNumber() < day.getDayNumber()) {
                 daysBetween = day.getDayNumber() - itineraryFlightInfo.getArrivalDay().getDayNumber();

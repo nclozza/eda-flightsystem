@@ -113,7 +113,6 @@ public class ValidateData {
     }
 
     public static boolean validateOrigin(String origin, FlightSystem flightSystem) {
-        System.out.println(origin);
         for (Airport a : flightSystem.getAirportList())
             if (a.getName().equals(origin)) {
                 return true;
@@ -122,7 +121,6 @@ public class ValidateData {
     }
 
     public static boolean validateDestiny(String destiny, FlightSystem flightSystem) {
-        System.out.println(destiny);
         for (Airport a : flightSystem.getAirportList())
             if (a.getName().equals(destiny))
                 return true;

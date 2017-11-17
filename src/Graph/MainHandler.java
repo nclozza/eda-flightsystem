@@ -52,8 +52,8 @@ public class MainHandler {
                   ValidateData.validateLat(aux[3]); //aux[3] is lat
                   ValidateData.validateLng(aux[4]); //aux[4] is long
 
-                  Integer lat = Integer.parseInt(aux[3]);
-                  Integer lon = Integer.parseInt(aux[4]);
+                  Double lat = Double.parseDouble(aux[3]);
+                  Double lon = Double.parseDouble(aux[4]);
 
                   if (flightSystem.getAirport(aux[2]) != null) {
                     System.out.println("Airport already exists");
@@ -170,9 +170,13 @@ public class MainHandler {
                 }
                 break;
               case "flight":
-                if (!(aux.length == 4)) System.out.println("Wrong input");
+                  System.out.println(aux[2]);
+                  System.out.println(aux[3]);
+                  if (!(aux.length == 4)){
+                    System.out.println("Wrong input");
+                }
                 else if (!(ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]))) {
-                  System.out.println("Deleting flight " + aux[2] + " - " + aux[3]);
+                    System.out.println("Deleting flight " + aux[2] + " - " + aux[3]);
                 } else {
                   System.out.println("The flight you want to delete does not exist");
                 }
@@ -334,11 +338,11 @@ public class MainHandler {
       daysList.addAll(Arrays.asList(days));
 
       String departureHour[] = aux[5].split(":");
-      double departureTime = Double.parseDouble(departureHour[0]) + Double.parseDouble(departureHour[1]);
+      int departureTime = Integer.parseInt(departureHour[0]) + Integer.parseInt(departureHour[1]);
 
       String duration[] = aux[6].split("h");
       duration[1] = duration[1].replace("m", "");
-      double durationTime = Double.parseDouble(duration[0]) + Double.parseDouble(duration[1]);
+      int durationTime = Integer.parseInt(duration[0]) + Integer.parseInt(duration[1]);
 
         try {
             flightSystem.addFlight(aux[0], Integer.parseInt(aux[1]), daysList, aux[3], aux[4],
