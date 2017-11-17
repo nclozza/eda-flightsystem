@@ -17,8 +17,7 @@ public class Airport {
      */
     private String name;
     /**
-     * The airport's position consisting of a latitude and a longitude. For more info read the Coordinate class
-     * implementation.
+     * The airport's position consisting of a latitude and a longitude.
      */
     private Coordinate position;
     /**
@@ -27,12 +26,6 @@ public class Airport {
      * will indicate an arc that arrives to this airport which will in turn work as the flight's head.
      */
     private List<Flight> flights;
-
-    /**
-     * Variable that marks a node if it was visited during a transversion of the graph
-     */
-
-    boolean visited = false;
 
 
     Airport(String name, double latitude, double longitude) {

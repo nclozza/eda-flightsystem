@@ -115,12 +115,6 @@ public class FlightSystem {
         requestedPaths.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
     }
 
-    private void clearMarks() {
-        for (Airport a : airportList) {
-            a.visited = false;
-        }
-    }
-
     private class PriceComparator implements Comparator<PQAirport> {
         @Override
         public int compare(PQAirport pqAirport1, PQAirport pqAirport2) {
@@ -306,9 +300,6 @@ public class FlightSystem {
 
     private PQAirport minPath(Airport origin, Airport destination, List<String> days,
                               Comparator<PQAirport> pqComparator) {
-
-        clearMarks();
-
         boolean worldTrip = origin.equals(destination);
 
         /*
