@@ -167,7 +167,7 @@ public class MainHandler {
                                             try {
                                                 flightSystem.addFlight(aeroName,flightNumber, daysList, origName, destName, (hour*60)+min, (longInH*60)+longInM ,price);
                                             } catch (Exception e) {
-                                                System.out.println("TIRO EXCEPTION");
+                                                System.out.println("Exception found");
                                             }
 
                                             System.out.println("Inserting flight " + aux[2] + " - " + aux[3]);
@@ -236,10 +236,10 @@ public class MainHandler {
                     }
                     break;
                 case "findRoute":
-                    //Sintaxis: findRoute [origen] [destino] [prioridad{ft|pr|tt}] [diasSemana]
+
                     if (aux.length == 5
-                        && ValidateData.validateName(aux[1]) //origen
-                        && ValidateData.validateName(aux[2]) //destino
+                        && ValidateData.validateName(aux[1]) //origin
+                        && ValidateData.validateName(aux[2]) //destination
                         && (aux[3].equals("ft") || aux[3].equals("pr") || aux[3].equals("tt"))
                         && ValidateData.validateDay(aux[4]) /*days*/) {
 
@@ -258,7 +258,7 @@ public class MainHandler {
                         }
 
                         if (itinerary == null) {
-                            System.out.println("Can't find an appropriate flight itinerary");
+                            System.out.println("Couldn't find an appropriate flight itinerary");
 
                         } else {
                             outputHandler(itinerary, textFile, fileName, KML);
@@ -270,9 +270,9 @@ public class MainHandler {
                     break;
 
                 case "worldTrip":
-                    //Sintaxis: worldTrip [origen] [prioridad{ft|pr|tt}] [diasSemana]
+
                     if (aux.length == 4
-                        && ValidateData.validateName(aux[1]) //origen
+                        && ValidateData.validateName(aux[1]) //origin
                         && (aux[2].equals("ft") || aux[2].equals("pr") || aux[2].equals("tt"))
                         && ValidateData.validateDay(aux[3]) /*days*/) {
 
@@ -458,6 +458,7 @@ public class MainHandler {
             }
         }
     }
+
 
     public FlightSystem getFlightSystem() {
         return flightSystem;
