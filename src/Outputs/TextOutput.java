@@ -13,7 +13,7 @@ public class TextOutput {
             absolutePath += "\\" + fileName;
             File logFile = new File(absolutePath);
             writer = new BufferedWriter(new FileWriter(logFile));
-            writer.write(string+"\n");
+            writer.write(string);
 
         } catch (Exception e) {
             System.out.println("Some problem occurred with the output file");

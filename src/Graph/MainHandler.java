@@ -424,9 +424,9 @@ public class MainHandler {
 
             } else {
                 StringBuilder ret = new StringBuilder();
-                ret.append("Precio#").append(itinerary.getTotalPrice()).append("\n");
-                ret.append("TiempoVuelo#").append(itinerary.getFlightTime().toString()).append("\n");
-                ret.append("TiempoTotal#").append(itinerary.getTotalFlightTime().toString()).append("\n\n");
+                ret.append("Precio#").append(itinerary.getTotalPrice()).append(System.getProperty("line.separator"));
+                ret.append("TiempoVuelo#").append(itinerary.getFlightTime().toString()).append(System.getProperty("line.separator"));
+                ret.append("TiempoTotal#").append(itinerary.getTotalFlightTime().toString()).append(System.getProperty("line.separator"));
 
                 for (ItineraryFlightInfo each : itinerary.getFlights()) {
                     ret.append(each.getFlight().getOrigin().getName()).append("#")
