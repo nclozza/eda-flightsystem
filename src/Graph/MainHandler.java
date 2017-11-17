@@ -164,10 +164,8 @@ public class MainHandler {
                                             System.out.println("That flight already exists");
 
                                         } else {
-                                            Flight auxFlight = new Flight(aeroName, flightNumber, daysList, airportAuxOrigin,
-                                                airportAuxDestination, new Time(hour, min), new Time(longInH, longInM), price);
                                             try {
-                                                flightSystem.addFlight(aeroName,flightNumber, daysList, origName, destName, hour+min, longInH+longInM ,price);
+                                                flightSystem.addFlight(aeroName,flightNumber, daysList, origName, destName, (hour*60)+min, (longInH*60)+longInM ,price);
                                             } catch (Exception e) {
                                                 System.out.println("TIRO EXCEPTION");
                                             }
