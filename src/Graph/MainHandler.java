@@ -107,8 +107,9 @@ public class MainHandler {
                                     boolean state3 = ValidateData.validateDestiny(aux[6], flightSystem) && ValidateData.validateDepartureTime(aux[7]);
                                     boolean state4 = ValidateData.validateFlightDuration(aux[8]) && ValidateData.validatePrice(aux[9]);
 
-                                    if (!(state1 && state2 && state3 && state4))
-                                        System.out.println("Wrong input");
+                                    if (!(state1 && state2 && state3 && state4)) {
+                                        System.out.println("Wrong input or no airport was found");
+                                    }
                                     else {
                                         String aeroName = aux[2];
                                         Integer flightNumber = Integer.parseInt(aux[3]);
@@ -181,7 +182,7 @@ public class MainHandler {
                     }
                     break;
                 case "delete":
-                    if (aux.length >= 2) {
+                    if (aux.length >= 3) {
                         switch (aux[1]) {
                             case "airport":
                                 if (!(aux.length == 3)) System.out.println("Wrong input");
@@ -195,11 +196,9 @@ public class MainHandler {
                                 }
                                 break;
                             case "flight":
-                                System.out.println(aux[2]);
-                                System.out.println(aux[3]);
                                 if (!(aux.length == 4)) {
                                     System.out.println("Wrong input");
-                                } else if (!(ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]))) {
+                                } else if (ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3])) {
                                     flightSystem.deleteFlight(aux[2], Integer.parseInt(aux[3]));
                                 } else {
                                     System.out.println("The flight you want to delete does not exist");
