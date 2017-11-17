@@ -34,11 +34,6 @@ public class MainHandler {
         boolean KML = false;
         String fileName = null;
 
-        //Windows 10
-        //String so = System.getProperty("os.name");
-        //System.out.println(so);
-
-
         while (true) {
             System.out.println("Enter some text, or '" + EXIT_COMMAND + "' to quit");
             System.out.print("> ");
@@ -401,7 +396,6 @@ public class MainHandler {
                 absolutePath = new File(Paths.get(".").toAbsolutePath().normalize().toString()).getAbsolutePath();
                 absolutePath += "/" + path;
             }
-
             BufferedReader br = new BufferedReader(new FileReader(absolutePath));
             String line = br.readLine();
             LinkedList<String> ret = new LinkedList<>();
