@@ -17,7 +17,7 @@ public class FlightSystem {
      * is full it will delete the 5 least requested flights to make space for new flights to gain "popularity", leaving
      * 10 other flights remaining along with the top 10 so that they may take the top spots.
      */
-    private TreeSet<Path> requestedPaths;
+    private TreeMap<ItineraryKey, Itinerary> frequentItineraries;
 
     final static int TOP_REQUESTED = 10;
     final static int MAX_REQUESTED = 25;
@@ -27,7 +27,7 @@ public class FlightSystem {
         airportList = new LinkedList<>();
         airportHashMap = new HashMap<>();
         flightHashMap = new HashMap<>();
-        requestedPaths = new TreeSet<>(new PathComparator());
+        frequentItineraries = new TreeMap<>(new KeyComparator ());
     }
 
     void addAirport(String name, double latitude, double longitude) {
@@ -35,7 +35,7 @@ public class FlightSystem {
         airportList.add(a);
         airportHashMap.put(name, a);
 
-        requestedPaths.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
+        frequentItineraries.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
     }
 
     boolean deleteAirport(String airportName) {
@@ -46,7 +46,7 @@ public class FlightSystem {
                 if (a.getName().equals(airportName)) {
                     airportList.remove(a);
 
-                    requestedPaths.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
+                    frequentItineraries.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
 
                     return true;
                 }
@@ -59,7 +59,7 @@ public class FlightSystem {
     void deleteAllAirports() {
         airportList.clear();
         airportHashMap.clear();
-        requestedPaths.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
+        frequentItineraries.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
     }
 
     void deleteFlight(String airline, Integer flightNr) {
@@ -89,7 +89,7 @@ public class FlightSystem {
         }
 
         flightHashMap.clear();
-        requestedPaths.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
+        frequentItineraries.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
     }
 
     Airport getAirport(String airportName) {
@@ -112,7 +112,7 @@ public class FlightSystem {
         airportHashMap.get(origin).addFlight(flight);
         flightHashMap.put(airline + flightNr, flight);
 
-        requestedPaths.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
+        frequentItineraries.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
     }
 
     private class PriceComparator implements Comparator<PQAirport> {
@@ -216,88 +216,6 @@ public class FlightSystem {
         }
     }
 
-    private class Path {
-        PQAirport pqOrigin;
-        Airport origin, destination;
-        Comparator<PQAirport> criteria;
-        String departureDay;
-        int requestFrecuency = 0;
-
-        public Path(PQAirport pqOrigin, Comparator<PQAirport> criteria, String departureDay) {
-            this.pqOrigin = pqOrigin;
-            origin = pqOrigin.getAirport();
-            List<ItineraryFlightInfo> flights = pqOrigin.getItineraryFlightInfoList();
-            destination = flights.get(flights.size() - 1).getFlight().getDestination();
-            this.criteria = criteria;
-            this.departureDay = departureDay;
-        }
-
-        Airport getOrigin() {
-            return origin;
-        }
-
-        Airport getDestination() {
-            return destination;
-        }
-
-        Comparator<PQAirport> getCriteria() {
-            return criteria;
-        }
-
-        String getDepartureDay() {
-            return departureDay;
-        }
-
-        int getRequestFrecuency() {
-            return requestFrecuency;
-        }
-
-        void updateRequestFrecuency() {
-            requestFrecuency++;
-        }
-
-        PQAirport getPQAirport() {
-            return pqOrigin;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-
-            if (obj.getClass() != Path.class) {
-                return false;
-            }
-
-            boolean sameOrigin = ((Path)obj).getOrigin().equals(this.getOrigin());
-            boolean sameDestination = ((Path)obj).getDestination().equals(this.getDestination());
-            boolean bothPriceCriteria = (((Path)obj).getCriteria() instanceof PriceComparator) &&
-                    (criteria instanceof PriceComparator);
-            boolean bothTimeCriteria = (((Path)obj).getCriteria() instanceof TimeComparator) &&
-                    (criteria instanceof TimeComparator);
-            boolean bothTotalTimeCriteria = (((Path)obj).getCriteria() instanceof TotalTimeComparator) &&
-                    (criteria instanceof TotalTimeComparator);
-            boolean sameCriteria = bothPriceCriteria || bothTimeCriteria || bothTotalTimeCriteria;
-            boolean sameDepartureDay = ((Path)obj).getDepartureDay().equals(departureDay);
-
-
-            return sameOrigin && sameDestination && sameCriteria && sameDepartureDay;
-        }
-
-        @Override
-        public int hashCode() {
-            return (origin.hashCode() * 13) + (destination.hashCode() * 17) + (departureDay.hashCode() * 37);
-        }
-    }
-
-    private class PathComparator implements Comparator<Path> {
-        @Override
-        public int compare(Path o1, Path o2) {
-            return o1.getRequestFrecuency() - o2.getRequestFrecuency();
-        }
-    }
-
     private PQAirport minPath(Airport origin, Airport destination, List<String> days,
                               Comparator<PQAirport> pqComparator) {
         boolean worldTrip = origin.equals(destination);
@@ -324,11 +242,6 @@ public class FlightSystem {
                             pqAirport.visitedAirports.remove(origin);
                         }
 
-                        PQAirport frequentPath = checkFrequentPaths(pqAirport, pqComparator);
-
-                        if (frequentPath != null) {
-                            return frequentPath;
-                        }
                         priorityQueue.offer(pqAirport);
                     }
 
@@ -347,13 +260,9 @@ public class FlightSystem {
             if (currentPQAirport.airport.equals(destination)) {
                 if (worldTrip) {
                     if (currentPQAirport.visitedAirports.size() == airportList.size()) {
-                        updateFrequentPaths(currentPQAirport, pqComparator);
-
                         return currentPQAirport;
                     }
                 } else {
-                    updateFrequentPaths(currentPQAirport, pqComparator);
-
                     return currentPQAirport;
                 }
             }
@@ -389,34 +298,49 @@ public class FlightSystem {
         return true;
     }
 
-    private PQAirport checkFrequentPaths(PQAirport currentPQAirport, Comparator<PQAirport> pqComparator) {
-        String departureDay = currentPQAirport.getItineraryFlightInfoList().get(0).getDepartureDay()
-                .getDayName();
-        Path thisPath = new Path(currentPQAirport, pqComparator, departureDay);
 
-        if (requestedPaths.contains(thisPath)) {
-            requestedPaths.remove(thisPath);
-            thisPath.updateRequestFrecuency();
-            requestedPaths.add(thisPath);
+    private class ItineraryKey {
+        private String request;
+        private int requestedFrecuency = 0;
 
-            return currentPQAirport;
-        } else {
-            return null;
+        ItineraryKey(String origin, String destination, String day, String criteria) {
+            request = origin + destination + day + criteria;
+        }
+
+        void updateFrequency() {
+            requestedFrecuency++;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != ItineraryKey.class) {
+                return false;
+            }
+
+            return ((ItineraryKey)obj).request.equals(this.request);
+        }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
         }
     }
 
-    private void updateFrequentPaths(PQAirport currentPQAirport, Comparator<PQAirport> pqComparator) {
-        String departureDay = currentPQAirport.getItineraryFlightInfoList().get(0).getDepartureDay()
-                .getDayName();
-        Path thisPath = new Path(currentPQAirport, pqComparator, departureDay);
-
-        if (requestedPaths.size() > MAX_REQUESTED) {
-            while (requestedPaths.size() > (MAX_REQUESTED - LEAST_REQUESTED)) {
-                requestedPaths.pollFirst();
+    private class KeyComparator implements Comparator<ItineraryKey> {
+        @Override
+        public int compare(ItineraryKey o1, ItineraryKey o2) {
+            if (o1.request.equals(o2.request)) {
+                return 0;
+            } else if (o1.requestedFrecuency - o2.requestedFrecuency == 0) {
+                return -1;  // We need to have itineraries with the same frequency but different request
             }
-        }
 
-        requestedPaths.add(thisPath);
+            return o1.requestedFrecuency - o2.requestedFrecuency;
+        }
     }
 
     /**
@@ -432,6 +356,15 @@ public class FlightSystem {
 
         Airport originAirport = airportHashMap.get(origin);
         Airport destinationAirport = airportHashMap.get(destination);
+
+        for (String day : days) {
+            ItineraryKey key = new ItineraryKey(origin, destination, day, priority);
+
+            if (frequentItineraries.containsKey(key)) {
+
+                return frequentItineraries.get(key);
+            }
+        }
 
         PQAirport node;
         switch (priority) {
@@ -451,6 +384,19 @@ public class FlightSystem {
                 return null;
         }
 
-        return node == null ? null : new Itinerary(node.price, node.totalTime, node.flightTime, node.itineraryFlightInfoList);
+        Itinerary retItinerary = new Itinerary(node.price, node.totalTime, node.flightTime, node.itineraryFlightInfoList);
+        String day = node.itineraryFlightInfoList.get(0).getDepartureDay().getDayName();
+        ItineraryKey retItineraryKey = new ItineraryKey(origin, destination, day, priority);
+
+        // If the map is full, we clear the last 'LEAST_REQUESTED' amount of entries
+        if (frequentItineraries.size() > MAX_REQUESTED) {
+            while (frequentItineraries.size() > (MAX_REQUESTED - LEAST_REQUESTED)) {
+                frequentItineraries.remove(frequentItineraries.firstKey());
+            }
+        }
+
+        frequentItineraries.put(retItineraryKey , retItinerary);
+
+        return node == null ? null : retItinerary;
     }
 }
