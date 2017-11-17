@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:xal="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0">
+    <Document>
+        <name>Itinerary</name>
+        <Style id="PathStyle">
+            <LineStyle>
+                <color>ff33ccff</color>
+                <width>3.0</width>
+            </LineStyle>
+        </Style>
+        <Placemark>
+            <name>BUE</name>
+            <open>1</open>
+            <Point>
+                <coordinates>-58.268,-34.6</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>PAR</name>
+            <open>1</open>
+            <Point>
+                <coordinates>2.35,48.8</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>Path</name>
+            <styleUrl>#PathStyle</styleUrl>
+            <LineString>
+                <tessellate>1</tessellate>
+                <coordinates>-58.268,-34.6 2.35,48.8</coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>

@@ -329,14 +329,12 @@ public class FlightSystem {
                         if (frequentPath != null) {
                             return frequentPath;
                         }
-
                         priorityQueue.offer(pqAirport);
                     }
 
                 }
             }
         }
-
         /**
          * Dijkstra's algorithm starting from the second step with price priority
          */

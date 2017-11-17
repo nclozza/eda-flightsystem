@@ -46,7 +46,7 @@ public class MainHandler {
                     if (aux.length >= 2) {
                         switch (aux[1]) {
                             case "airport":
-                                if ((aux.length != 5)) System.out.println("Wrong input1");
+                                if ((aux.length != 5)) System.out.println("Wrong input");
                                 else {
                                     ValidateData.validateName(aux[2]); //aux[2] is name
                                     ValidateData.validateLat(aux[3]); //aux[3] is lat
@@ -160,10 +160,13 @@ public class MainHandler {
                                         } else {
                                             Flight auxFlight = new Flight(aeroName, flightNumber, daysList, airportAuxOrigin,
                                                 airportAuxDestination, new Time(hour, min), new Time(longInH, longInM), price);
+                                            try {
+                                                flightSystem.addFlight(aeroName,flightNumber, daysList, origName, destName, hour+min, longInH+longInM ,price);
+                                            } catch (Exception e) {
+                                                System.out.println("TIRO EXCEPTION");
+                                            }
 
                                             System.out.println("Inserting flight " + aux[2] + " - " + aux[3]);
-
-                                            flightSystem.getAirportList().get(originIndex).addFlight(auxFlight);
                                         }
                                     }
                                 }
