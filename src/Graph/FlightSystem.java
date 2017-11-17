@@ -414,7 +414,7 @@ public class FlightSystem {
 
         if (requestedPaths.size() > MAX_REQUESTED) {
             while (requestedPaths.size() > (MAX_REQUESTED - LEAST_REQUESTED)) {
-                requestedPaths.pollLast();
+                requestedPaths.pollFirst();
             }
         }
 
