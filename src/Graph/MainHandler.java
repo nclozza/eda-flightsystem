@@ -68,10 +68,11 @@ public class MainHandler {
                                     if (aux[2].equals("airports")) {
                                         if (aux.length == 5) {
                                             String path = aux[3];
-                                            LinkedList<String> airports = processingFile(path);
                                             if (aux[4].equals("replace") || aux[4].equals("append")) {
+                                                System.out.println((aux[4].equals("replace") ? "Replacing" : "Appending")
+                                                                    + " all airports");
+                                                LinkedList<String> airports = processingFile(path);
                                                 addAirportsFromFile(airports, aux[4].equals("replace")); //aux[4] is append or replace
-                                                System.out.println(aux[4].toUpperCase() + " all airports");
                                             } else {
                                                 System.out.println("Wrong input");
                                             }
@@ -80,10 +81,11 @@ public class MainHandler {
                                     } else if (aux[2].equals("flights")) {
                                         if (aux.length == 5) {
                                             String path = aux[3];
-                                            LinkedList<String> flights = processingFile(path);
                                             if (aux[4].equals("replace") || aux[4].equals("append")) {
+                                                System.out.println((aux[4].equals("replace") ? "Replacing" : "Appending")
+                                                                    + " all flights");
+                                                LinkedList<String> flights = processingFile(path);
                                                 addFlightsFromFile(flights, aux[4].equals("replace")); //aux[4] is append or replace
-                                                System.out.println(aux[4].toUpperCase() + " all flights");
                                             } else {
                                                 System.out.println("Wrong input");
                                             }
@@ -368,7 +370,7 @@ public class MainHandler {
                     flightSystem.addFlight(aux[0], Integer.parseInt(aux[1]), daysList, aux[3], aux[4],
                         departureTime, durationTime, Double.parseDouble(aux[7]));
                 } catch (Exception e) {
-                    System.out.println("Wrong airports for that flight.\n");
+                    System.out.println("Wrong airports for that flight.");
                 }
             }
         }
@@ -382,9 +384,6 @@ public class MainHandler {
             String line = br.readLine();
             LinkedList<String> ret = new LinkedList<>();
             while (line != null) {
-                if (!ValidateData.validateLineFile(line, flightSystem)) {
-                    System.out.println("Wrong file format");
-                }
                 ret.add(line);
                 line = br.readLine();
             }
