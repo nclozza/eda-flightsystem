@@ -5,8 +5,11 @@ import InputHandler.ValidateData;
 import Outputs.KMLOutput;
 import Outputs.TextOutput;
 
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -384,8 +387,8 @@ public class MainHandler {
 
     private LinkedList<String> processingFile(String path) {
         try {
-            String absolutePath = new File("").getAbsolutePath();
-            absolutePath += "/src/Data/Input/" + path;
+            String absolutePath = new File(Paths.get(".").toAbsolutePath().normalize().toString()).getAbsolutePath();
+            absolutePath += "\\" + path;
             BufferedReader br = new BufferedReader(new FileReader(absolutePath));
             String line = br.readLine();
             LinkedList<String> ret = new LinkedList<>();

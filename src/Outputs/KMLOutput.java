@@ -6,6 +6,7 @@ import de.micromata.opengis.kml.v_2_2_0.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class KMLOutput {
@@ -26,12 +27,11 @@ public class KMLOutput {
         }
         Style style = document.createAndAddStyle().withId("PathStyle");
         LineStyle pathSyle = style.createAndSetLineStyle().withColor("ff33ccff").withWidth(3);
-
         document.createAndAddPlacemark().withStyleUrl("#PathStyle").withName("Path").setGeometry(path);
 
         try {
-            String absolutePath = new File("").getAbsolutePath();
-            absolutePath += "/src/Data/Output/" + fileName;
+            String absolutePath = new File(Paths.get(".").toAbsolutePath().normalize().toString()).getAbsolutePath();
+            absolutePath += "\\" + fileName;
 
             if (file) {
                 kml.marshal(new File(absolutePath));
