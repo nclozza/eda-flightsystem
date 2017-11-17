@@ -11,10 +11,12 @@ import java.util.*;
 public class FlightSystem {
     private List<Airport> airportList;
     private HashMap<String, Airport> airportHashMap;
+    private HashMap<String, Flight> flightHashMap;
 
     FlightSystem(){
         airportList = new LinkedList<>();
         airportHashMap = new HashMap<>();
+        flightHashMap = new HashMap<>();
     }
 
     void addAirport(String name, double latitude, double longitude) {
@@ -43,6 +45,27 @@ public class FlightSystem {
         airportHashMap.clear();
     }
 
+    void deleteFlight(String airline, Integer flightNr) {
+        Flight flight = flightHashMap.get(airline + flightNr);
+        if (flight == null) {
+            System.out.println("Wrong flight");
+
+        } else {
+            for (Flight eachFlight : flight.getOrigin().getFlights()) {
+                if (eachFlight.getAirline().equals(airline) && eachFlight.getFlightNr() == flightNr) {
+                    flight.getOrigin().getFlights().remove(eachFlight);
+                    break;
+                }
+            }
+
+            flightHashMap.remove(airline + flightNr);
+        }
+    }
+
+    boolean containsFlight(String airline, Integer flightNr) {
+        return flightHashMap.containsKey(airline + flightNr);
+    }
+
     void deleteAllFlights(){
         for (Airport a : airportList){
             a.deleteAllFlights();
@@ -67,6 +90,7 @@ public class FlightSystem {
                                     airportHashMap.get(destination), new Time(departureTime), new Time(duration), price);
 
         airportHashMap.get(origin).addFlight(flight);
+        flightHashMap.put(airline + flightNr, flight);
     }
 
     private void clearMarks() {
