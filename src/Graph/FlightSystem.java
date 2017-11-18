@@ -71,11 +71,13 @@ public class FlightSystem {
             for (Flight eachFlight : flight.getOrigin().getFlights()) {
                 if (eachFlight.getAirline().equals(airline) && eachFlight.getFlightNr() == flightNr) {
                     flight.getOrigin().getFlights().remove(eachFlight);
-                    break;
+                    flightHashMap.remove(airline + flightNr);
+                    System.out.println("The specified flight was successfully deleted\n");
+                    return;
                 }
             }
 
-            flightHashMap.remove(airline + flightNr);
+            System.out.println("Could not delete the specified flight\n");
         }
     }
 

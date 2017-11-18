@@ -416,8 +416,6 @@ public class MainHandler {
     }
 
     private void deleteFlight(String[] aux) {
-        System.out.println(aux[2]);
-        System.out.println(aux[3]);
         if (!(aux.length == 4)) {
             System.out.println("Wrong input");
         } else if (!(ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]))) {

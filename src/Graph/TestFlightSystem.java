@@ -1,5 +1,6 @@
 package Graph;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
@@ -28,8 +29,8 @@ class TestFlightSystem {
                         "AirportList must have 5 items right now");
         assertEquals("BUE", flightSystem.getAirport("BUE").getName(),
                         "Airport BUE must be inserted");
-        assertEquals(null, flightSystem.getAirport("BRA"),
-                        "Airport BRA must not be in the airports list");
+        assertEquals("Airport BRA must not be in the airports list", null,
+                flightSystem.getAirport("BRA"));
 
         LinkedList<String> flights = new LinkedList<>();
         flights.add("AA#1234#Lu-Ma-Vi#BUE#PAR#10:00#12h0m#100");
