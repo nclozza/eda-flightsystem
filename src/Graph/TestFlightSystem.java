@@ -9,7 +9,7 @@ import java.util.LinkedList;
 class TestFlightSystem {
 
     @Test
-    void main() throws Exception {
+    void mainTest() throws Exception {
 
         FlightSystem flightSystem = new FlightSystem();
 
