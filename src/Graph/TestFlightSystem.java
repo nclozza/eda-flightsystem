@@ -33,7 +33,7 @@ class TestFlightSystem {
 
         LinkedList<String> flights = new LinkedList<>();
         flights.add("AA#1234#Lu-Ma-Vi#BUE#PAR#10:00#12h0m#100");
-        flights.add("AF#6786#Jue-Vi-Sa#BUE#PAR#18:00#11h0m#120");
+        flights.add("AF#6786#Ju-Vi-Sa#BUE#PAR#18:00#11h0m#120");
         flights.add("BA#7896#Lu-Ma-Sa#PAR#LON#12:00#9h0m#90");
         flights.add("AM#2324#Ma-Sa-Do#PAR#DEL#20:00#7h0m#200");
         flights.add("BB#2154#Lu#LON#MOS#10:30#4h0m#70");
