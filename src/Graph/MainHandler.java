@@ -203,7 +203,7 @@ public class MainHandler {
                         .append(each.getFlight().getAirline()).append("#")
                         .append(each.getFlight().getFlightNr()).append("#")
                         .append(each.getArrivalDay().getDayName()).append("#")
-                        .append(each.getFlight().getDestination().getName()).append("\n");
+                        .append(each.getFlight().getDestination().getName()).append(System.getProperty("line.separator"));
                 }
 
                 if (textFile) {
