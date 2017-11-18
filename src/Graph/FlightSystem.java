@@ -92,6 +92,10 @@ public class FlightSystem {
         frequentItineraries.clear(); // The top 10 paths list does not make sense anymore if the "graph" changed
     }
 
+    int getFlightsNumber() {
+        return flightHashMap.size();
+    }
+
     Airport getAirport(String airportName) {
         return airportHashMap.get(airportName);
     }
