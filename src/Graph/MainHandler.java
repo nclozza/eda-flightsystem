@@ -422,8 +422,10 @@ public class MainHandler {
             System.out.println("Wrong input");
         } else if (!(ValidateData.validateName(aux[2]) && ValidateData.validateFlightNumber(aux[3]))) {
             flightSystem.deleteFlight(aux[2], Integer.parseInt(aux[3]));
-        } else {
             System.out.println("The flight you want to delete does not exist");
+        } else {
+            System.out.println("Deleting flight " + aux[2] + " " + aux[3]);
+            flightSystem.deleteFlight(aux[2], Integer.parseInt(aux[3]));
         }
     }
 
